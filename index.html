@@ -1,0 +1,1812 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GEARVAULT Mint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Urbanist:wght@200;300;400;500;600;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap"
+    />
+    <link rel="stylesheet" href="hark.css" />
+    <link rel="stylesheet" href="hark-hero.css" />
+    <style>
+      :root[data-theme="dark"] {
+        --sans: "Urbanist", "Outfit", "Geist", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+        --fill-primary-on: #000;
+        --x-bg: #000;
+        --x-panel: #0f0f11;
+        --x-panel-2: #18181b;
+        --x-line: #232327;
+        --x-lime: #c6f432;
+        --x-lime-ink: #000;
+        --x-purple: #8b3dff;
+        --x-orange: #ff6b1a;
+        --x-c: var(--x-lime);
+        --x-common: #9aa0a6;
+        --x-rare: #4da3ff;
+        --x-epic: #a46bff;
+        --x-legendary: #f5c542;
+        --x-track: 0.14em;
+      }
+      body { background: var(--x-bg); font-family: var(--sans); letter-spacing: 0.02em; }
+      .x-site { min-height: 100vh; }
+      .x-wrap { max-width: var(--page-max); margin: 0 auto; padding-inline: var(--gutter); }
+
+      /* header */
+      .x-bar {
+        position: sticky; top: 0; z-index: 30;
+        background: color-mix(in srgb, var(--x-bg) 80%, transparent);
+        -webkit-backdrop-filter: var(--hark-blur); backdrop-filter: var(--hark-blur);
+      }
+      .x-bar__in {
+        display: grid; grid-template-columns: 1fr auto; grid-template-areas: "logo right" "nav nav";
+        align-items: center; gap: 8px 12px; padding-block: 10px;
+      }
+      .x-bar__logo { grid-area: logo; display: flex; align-items: center; min-height: var(--tap); }
+      .x-bar__logo img { height: 36px; width: auto; }
+      /* nav: a dark capsule tab bar with a raised pill that slides to the active tab */
+      .x-bar__nav {
+        grid-area: nav; justify-self: center; position: relative; display: flex; align-items: center; gap: 2px;
+        height: 52px; padding: 6px; max-width: 100%; box-sizing: border-box;
+        background: #141414; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: var(--r-pill);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 8px 20px rgba(0, 0, 0, 0.45);
+        overflow-x: auto; scrollbar-width: none;
+      }
+      .x-bar__nav::-webkit-scrollbar { display: none; }
+      .x-bar__nav a {
+        position: relative; z-index: 1; flex: none; display: inline-flex; align-items: center; gap: 8px;
+        height: 100%; padding: 0 16px 0 10px; box-sizing: border-box;
+        font: var(--weight-medium) 15px/1 var(--sans); letter-spacing: normal;
+        color: #878787; text-decoration: none; border-radius: var(--r-pill);
+        transition: color 0.25s ease, background-color 0.25s ease;
+      }
+      .x-bar__nav a:hover { color: #bdbdbd; background: #1c1c1c; }
+      .x-bar__nav a.is-active, .x-bar__nav a.is-active:hover { color: #fff; background: transparent; }
+      .x-tab__ic {
+        flex: none; display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+        background: transparent; transition: background-color 0.25s ease, color 0.25s ease;
+      }
+      .x-tab__ic svg { width: 16px; height: 16px; fill: currentColor; display: block; }
+      .x-bar__nav a.is-active .x-tab__ic { background: #101010; color: var(--x-lime); }
+      .x-tab__lbl { white-space: nowrap; }
+      .x-bar__right { grid-area: right; justify-self: end; }
+      @media (min-width: 760px) {
+        .x-bar__in { grid-template-columns: 1fr auto 1fr; grid-template-areas: "logo nav right"; }
+      }
+
+      /* buttons */
+      .x-btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        min-height: var(--tap); padding: 0 20px; border-radius: var(--r-pill);
+        font: var(--type-label); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+        color: var(--text-primary); background: transparent; border: 1px solid var(--stroke-primary);
+        cursor: pointer; transition: background var(--dur-quick) var(--ease-out), border-color var(--dur-quick) var(--ease-out), opacity var(--dur-quick);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .x-btn:hover { border-color: var(--text-secondary); }
+      .x-btn--lime { background: var(--x-lime); color: var(--x-lime-ink); border-color: var(--x-lime); }
+      .x-btn--lime:hover { background: color-mix(in srgb, var(--x-lime) 88%, white); border-color: transparent; }
+      .x-btn[disabled], .x-btn[aria-disabled="true"] {
+        cursor: not-allowed; color: var(--text-secondary); background: var(--x-panel-2); border-color: var(--stroke-secondary);
+      }
+      .x-btn--sm { padding: 0 14px; }
+      .x-btn--wallet { color: var(--x-lime); border-color: var(--x-lime); background: transparent; text-transform: none; letter-spacing: 0.04em; }
+      .x-btn--wallet:hover { border-color: var(--x-lime); background: color-mix(in srgb, var(--x-lime) 10%, transparent); }
+      .x-btn--wallet.is-connected::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--x-lime); }
+      /* dark button with a colored offset shadow */
+      .x-btn--pop {
+        background: var(--x-panel-2); color: var(--text-primary); border: 1px solid var(--x-line); border-radius: var(--r-s);
+        box-shadow: 4px 4px 0 var(--x-c); margin: 0 4px 4px 0;
+        transition: transform var(--dur-quick) var(--ease-out), box-shadow var(--dur-quick) var(--ease-out);
+      }
+      .x-btn--pop:hover:not([disabled]) { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--x-c); border-color: var(--x-line); }
+      .x-btn--pop:active:not([disabled]) { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--x-c); }
+      .x-btn--pop[disabled], .x-btn--pop[aria-disabled="true"] {
+        background: var(--x-panel-2); border-color: var(--x-line); color: var(--text-secondary); box-shadow: 4px 4px 0 var(--x-c);
+      }
+      .x-btn--purple { --x-c: var(--x-purple); }
+      .x-btn--orange { --x-c: var(--x-orange); }
+
+      /* compact black pill, one label, lime circle with a chevron */
+      .x-cap {
+        position: relative; display: inline-flex; align-items: center; justify-content: space-between; gap: 12px; box-sizing: border-box;
+        width: auto; max-width: 100%; flex: 0 0 auto; height: 44px; padding: 0 5px 0 18px; margin: 0;
+        border-radius: var(--r-pill); border: 1px solid rgba(198, 244, 50, 0.35);
+        background: #0c0c0c; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        color: #f2f2f2; font-family: var(--sans); letter-spacing: normal; text-transform: none; text-align: left; text-decoration: none;
+        cursor: pointer; -webkit-tap-highlight-color: transparent;
+        transition: transform 150ms var(--ease-out), border-color 150ms var(--ease-out), box-shadow 150ms var(--ease-out), opacity 150ms var(--ease-out);
+      }
+      .x-cap:hover:not([disabled]):not([aria-disabled="true"]) { border-color: #c6f432; }
+      .x-cap:active:not([disabled]):not([aria-disabled="true"]) { transform: scale(0.98); }
+      .x-cap:focus-visible { outline: 2px solid #c6f432; outline-offset: 3px; }
+      .x-cap__title { flex: 0 1 auto; min-width: 0; font: 500 14px/1.2 var(--sans); color: #f2f2f2; letter-spacing: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .x-cap__go {
+        flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+        background: #c6f432; color: #000; transition: transform 150ms var(--ease-out);
+      }
+      .x-cap__go svg { width: 16px; height: 16px; display: block; }
+      .x-cap:hover:not([disabled]):not([aria-disabled="true"]) .x-cap__go,
+      .x-cap:focus-visible .x-cap__go { transform: translateX(2px); }
+      /* disabled */
+      .x-cap[disabled], .x-cap[aria-disabled="true"] {
+        cursor: not-allowed; border-color: rgba(255, 255, 255, 0.10);
+        background: #0c0c0c; box-shadow: none; transform: none;
+      }
+      .x-cap[disabled] .x-cap__title, .x-cap[aria-disabled="true"] .x-cap__title { color: #7d7d7d; }
+      .x-cap[disabled] .x-cap__go, .x-cap[aria-disabled="true"] .x-cap__go { background: #1e1e1e; color: #666; transform: none; }
+      /* compact: header Connect Wallet only */
+      /* 44px tap box; the drawn pill is 36px: 4px clear border, hairline drawn inset */
+      .x-cap--sm {
+        height: 44px; padding: 0 5px 0 18px; gap: 12px;
+        border: 4px solid transparent; background-clip: padding-box;
+        box-shadow: inset 0 0 0 1px rgba(198, 244, 50, 0.35);
+      }
+      .x-cap--sm:hover:not([disabled]):not([aria-disabled="true"]) { border-color: transparent; box-shadow: inset 0 0 0 1px #c6f432; }
+      .x-cap--sm .x-cap__title { font-size: 13px; }
+      .x-cap--sm .x-cap__go { width: 28px; height: 28px; }
+      .x-cap--sm .x-cap__go svg { width: 14px; height: 14px; }
+      .x-cap.is-connected .x-cap__title { font-family: "Geist Mono", ui-monospace, monospace; }
+      /* lime 3D keycap in a recessed well: Open crate / Open again */
+      .x-well {
+        display: inline-flex; flex: 0 0 auto; padding: 6px; border-radius: 20px; background: #111;
+        border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+      }
+      .x-well:has(> [hidden]) { display: none; }
+      .x-key {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-sizing: border-box;
+        width: fit-content; height: 50px; padding: 0 24px; margin: 0; border: 0; border-radius: 14px;
+        background-color: #c6f432;
+        background-image: linear-gradient(180deg, #e2ff7a 0%, #c6f432 55%, #b4e024 100%);
+        box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.12), 0 5px 0 #7f9f16, 0 10px 18px rgba(0, 0, 0, 0.55);
+        color: #0a0a0a; font: 700 16px/1 var(--sans); letter-spacing: normal; text-transform: none; text-decoration: none; white-space: nowrap;
+        cursor: pointer; -webkit-tap-highlight-color: transparent;
+        transition: transform 90ms var(--ease-out), box-shadow 90ms var(--ease-out), filter 150ms var(--ease-out);
+      }
+      .x-key[hidden] { display: none; }
+      .x-key svg { width: 16px; height: 16px; flex: none; display: block; }
+      .x-key:hover { filter: brightness(1.06); }
+      .x-key:active {
+        transform: translateY(4px);
+        box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55), inset 0 -3px 0 rgba(0, 0, 0, 0.12), 0 1px 0 #7f9f16, 0 4px 8px rgba(0, 0, 0, 0.55);
+      }
+      .x-key:focus-visible { outline: 2px solid #c6f432; outline-offset: 4px; }
+      @media (prefers-reduced-motion: reduce) { .x-key, .x-key:active { transform: none; } }
+      @media (max-width: 480px) { .x-bar__right .x-cap--sm .x-cap__go { display: none; } .x-bar__right .x-cap--sm { padding-right: 18px; } }
+      .x-mono { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: 0; text-transform: none; }
+
+      /* hero */
+      .x-hero { position: relative; overflow: hidden; padding-block: clamp(32px, 6vw, 64px) clamp(48px, 8vw, 88px); }
+      .x-hero__grid {
+        position: relative; display: grid; gap: 28px; align-items: center;
+        grid-template-areas: "title" "art" "stats" "fan" "tag";
+      }
+      .x-hero__grid > .x-stats { grid-area: stats; justify-self: center; max-width: 560px; }
+      .x-hero__tag { grid-area: tag; justify-self: center; text-align: center; font: var(--type-small); color: var(--text-secondary); max-width: 34ch; letter-spacing: 0.03em; }
+
+      /* home fan: five cards held like a hand */
+      .x-fan {
+        --w: min(32vw, 200px);
+        --fw: min(calc(100vw - 2 * var(--gutter) + 16px), 560px);
+        --off: calc((var(--fw) - 1.64 * var(--w)) / 4);
+        grid-area: fan; justify-self: center; position: relative;
+        width: var(--fw); height: calc(var(--w) * 1.54 + 30px);
+      }
+      .x-fan__float { position: absolute; inset: 0; animation: x-fan-float 5s ease-in-out infinite; }
+      @keyframes x-fan-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+      .x-fan__card {
+        --r: calc((var(--i) - 2) * 7deg);
+        --y: calc(max(var(--i) - 2, 2 - var(--i)) * 7px);
+        position: absolute; left: calc(50% - var(--w) / 2); bottom: calc(var(--w) * 0.14 + 8px);
+        width: var(--w); padding: 0; border: 0; background: var(--x-panel-2); cursor: pointer;
+        border-radius: var(--r-s); overflow: hidden; z-index: calc(var(--i) + 1);
+        transform-origin: 50% 100%;
+        transform: translateX(calc((var(--i) - 2) * var(--off))) translateY(var(--y)) rotate(var(--r));
+        box-shadow: 0 12px 26px rgb(0 0 0 / 0.55), 0 2px 6px rgb(0 0 0 / 0.4);
+        transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .x-fan__card img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: contain; }
+      .x-fan__card:focus-visible { outline: 2px solid var(--x-lime); outline-offset: 3px; }
+      .x-fan__card:active, .x-fan__card:focus-visible {
+        transform: translateX(calc((var(--i) - 2) * var(--off))) translateY(calc(var(--y) - 14px)) rotate(calc(var(--r) * 0.5));
+        box-shadow: 0 22px 34px rgb(0 0 0 / 0.6), 0 4px 10px rgb(0 0 0 / 0.4);
+      }
+      @media (hover: hover) {
+        .x-fan__card:hover {
+          transform: translateX(calc((var(--i) - 2) * var(--off))) translateY(calc(var(--y) - 14px)) rotate(calc(var(--r) * 0.5));
+          box-shadow: 0 22px 34px rgb(0 0 0 / 0.6), 0 4px 10px rgb(0 0 0 / 0.4);
+        }
+      }
+      .x-fan.is-dealing .x-fan__card { animation: x-deal 0.6s var(--ease-out) calc(var(--i) * 80ms) backwards; }
+      @keyframes x-deal {
+        from { opacity: 0; transform: translateX(0) translateY(24px) rotate(calc((var(--i) - 2) * 1.5deg)); }
+        30% { opacity: 1; }
+      }
+      @media (min-width: 760px) {
+        .x-fan { --w: 220px; --fw: min(calc(100vw - 2 * var(--gutter)), 680px); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .x-fan__float, .x-fan.is-dealing .x-fan__card { animation: none !important; }
+        .x-fan__card { transition: none; }
+      }
+      .x-hero__title { grid-area: title; display: grid; justify-items: center; text-align: center; gap: 14px; position: relative; }
+      .x-eyebrow { font: var(--type-tag); letter-spacing: 0.24em; text-transform: uppercase; color: var(--x-lime); }
+      .x-hero h1 { display: grid; gap: 2px; color: var(--text-primary); }
+      .x-h1a { font: 200 clamp(30px, 6.6vw, 68px)/1.05 var(--sans); letter-spacing: 0.04em; }
+      .x-h1a sup { font-size: 0.5em; color: var(--x-lime); vertical-align: 0.9em; margin-left: 4px; font-weight: 400; }
+      .x-h1b { font: 700 clamp(34px, 7.4vw, 78px)/1.05 var(--sans); letter-spacing: 0.02em; }
+      .x-hero__ctas { display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin-top: 8px; width: 100%; }
+      .x-arrow { display: none; position: absolute; width: 96px; height: 80px; color: var(--text-primary); opacity: 0.85; pointer-events: none; }
+
+      .x-hero__art { grid-area: art; position: relative; width: min(80vw, 520px); max-width: 100%; justify-self: center; display: grid; place-items: center; }
+      .x-hero__art img { position: relative; display: block; width: 100%; height: auto; }
+
+      .x-hero__left { grid-area: left; display: grid; justify-items: center; text-align: center; gap: 14px; }
+      .x-avatar { width: 92px; padding: 5px; border-radius: var(--r-s); background: var(--x-panel-2); border: 1px solid var(--x-line); }
+      .x-avatar img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: contain; border-radius: 8px; }
+
+      /* HD card images: natural 5:7, never cropped, filtered or upscaled */
+      img[src^="card_"], .x-face--front img, .x-thumbs img, .x-lightbox__img img { image-rendering: auto; filter: none; }
+      .x-hero__left p { font: var(--type-small); color: var(--text-secondary); max-width: 26ch; letter-spacing: 0.03em; }
+
+      .x-hero__right { grid-area: right; display: grid; justify-items: center; gap: 22px; }
+      .x-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; margin: 0; }
+      .x-stats > div { display: grid; justify-items: center; gap: 4px; padding: 6px 4px; }
+      .x-stats > div + div { border-left: 1px solid color-mix(in srgb, var(--x-lime) 45%, transparent); }
+      .x-stats dd { margin: 0; position: relative; font: 600 clamp(24px, 6vw, 40px)/1 var(--sans); letter-spacing: 0.02em; color: var(--text-primary); order: -1; padding-right: 12px; }
+      .x-stats dd::before, .x-stats dd::after { content: ""; position: absolute; top: 2px; right: 2px; background: var(--x-lime); }
+      .x-stats dd::before { width: 8px; height: 2px; top: 5px; right: -1px; }
+      .x-stats dd::after { width: 2px; height: 8px; right: 2px; }
+      .x-stats dt { font: var(--type-tag); letter-spacing: 0.16em; text-transform: uppercase; color: var(--x-lime); }
+
+
+      @media (min-width: 900px) {
+        .x-hero__grid { gap: 28px 32px; }
+        .x-arrow { display: block; left: 21%; bottom: -78px; }
+      }
+
+      /* sections */
+      .x-sec { padding-block: clamp(48px, 8vw, 88px); scroll-margin-top: 120px; }
+      .x-head { display: grid; gap: 8px; margin-bottom: 28px; }
+      .x-head--center { justify-items: center; text-align: center; }
+      .x-head h2 {
+        font: 600 clamp(32px, 6vw, 56px)/1.05 var(--sans);
+        letter-spacing: 0.02em; color: var(--text-primary);
+      }
+      .x-head p.x-sub { color: var(--text-secondary); max-width: 52ch; }
+
+      /* mint panel */
+      .x-panel { background: var(--x-panel); border: 1px solid var(--x-line); border-radius: var(--r-l); padding: clamp(20px, 4vw, 32px); }
+      .x-mint { max-width: 600px; margin: 0 auto; display: grid; gap: 22px; position: relative; overflow: hidden; }
+      .x-mint::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--x-lime); }
+      .x-mint__top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+      .x-status {
+        display: inline-flex; align-items: center; gap: 8px; min-height: 30px; padding: 0 12px; border-radius: var(--r-pill);
+        border: 1px solid color-mix(in srgb, var(--x-lime) 55%, transparent);
+        font: var(--type-tag); letter-spacing: 0.14em; text-transform: uppercase; color: var(--x-lime);
+      }
+      .x-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--x-lime); }
+
+      /* WL checker */
+      .x-check { max-width: 600px; margin: 0 auto; display: grid; gap: 14px; background: #141416; border: 1px solid #222; border-radius: var(--r-l); padding: clamp(20px, 4vw, 32px); }
+      .x-check__title { display: inline-flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; }
+      .x-soon { font: var(--type-tag); letter-spacing: 0.16em; text-transform: uppercase; color: var(--x-lime); background-color: #141805; /* lime at 10% pre-blended onto the black page */ padding: 4px 10px; border-radius: var(--r-pill); }
+      .x-check__form { display: grid; gap: 10px; }
+      .x-check__row { display: flex; flex-wrap: wrap; gap: 10px; }
+      .x-check__input {
+        flex: 1 1 260px; min-width: 0; min-height: var(--tap); padding: 0 16px; border-radius: var(--r-s);
+        background: #0b0b0c; border: 1px solid #222; color: var(--text-primary);
+        font: 400 14px/1.2 "Geist Mono", ui-monospace, monospace; letter-spacing: 0;
+        transition: border-color var(--dur-quick) var(--ease-out);
+      }
+      .x-check__input::placeholder { color: var(--text-secondary); opacity: 0.8; }
+      .x-check__input:focus { outline: none; border-color: color-mix(in srgb, var(--x-lime) 60%, #222); }
+      .x-check__input[aria-invalid="true"] { border-color: color-mix(in srgb, #ff6b6b 60%, #222); }
+      .x-check__row { justify-content: center; }
+      .x-check__row .x-check__input { flex-basis: 100%; }
+      .x-check__row .x-cap { flex: 0 0 auto; margin-inline: auto; }
+      .x-check__aux { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 24px; }
+      .x-check__use {
+        background: none; border: 0; padding: 0; min-height: var(--tap); cursor: pointer;
+        font: var(--type-small); letter-spacing: 0.04em; color: var(--text-secondary);
+        text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #444;
+      }
+      .x-check__use:hover { color: var(--text-primary); }
+      .x-check__msg { font: var(--type-small); color: #ff6b6b; }
+      .x-check__msg.is-info { color: var(--text-secondary); }
+      .x-check__msg:empty { display: none; }
+      .x-check__res {
+        display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: var(--r-s);
+        background: #0f0f11; border: 1px solid #222; font: var(--type-body); color: var(--text-secondary);
+        animation: x-check-in 0.4s var(--ease-out);
+      }
+      .x-check__res[hidden] { display: none; }
+      .x-check__res svg { flex: none; width: 20px; height: 20px; margin-top: 1px; }
+      .x-check__res b { font-weight: var(--weight-medium); }
+      .x-check__res a { color: var(--text-primary); text-underline-offset: 3px; }
+      .x-check__res.is-gtd { color: var(--x-lime); border-color: color-mix(in srgb, var(--x-lime) 35%, #222); }
+      .x-check__res.is-fcfs { color: #4da3ff; border-color: color-mix(in srgb, #4da3ff 35%, #222); }
+      @keyframes x-check-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      @media (prefers-reduced-motion: reduce) { .x-check__res { animation: none; } }
+
+      /* featured drops */
+      .x-drops__head { display: grid; gap: 18px; margin-bottom: 28px; }
+      .x-drops__head .x-head { margin: 0; }
+      .x-drops__side { display: grid; gap: 16px; }
+      .x-drops__side p { color: var(--text-secondary); max-width: 40ch; font: var(--type-small); letter-spacing: 0.03em; }
+      .x-drops__nav { display: flex; gap: 10px; }
+      .x-sq {
+        width: var(--tap); height: var(--tap); display: grid; place-items: center; border-radius: var(--r-s); cursor: pointer;
+        background: var(--x-bg); color: var(--text-primary); border: 1px solid var(--stroke-primary);
+        transition: opacity var(--dur-quick) var(--ease-out);
+      }
+      .x-sq--fill { background: #fff; color: #000; border-color: #fff; }
+      .x-sq:disabled { opacity: 0.4; cursor: default; }
+      .x-sq svg { width: 18px; height: 18px; }
+      @media (min-width: 760px) {
+        .x-drops__head { grid-template-columns: 1fr auto; align-items: end; }
+        .x-drops__side { justify-items: end; text-align: right; }
+      }
+      .x-track {
+        display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory;
+        padding: 4px 4px 12px; margin-inline: -4px; scrollbar-width: none;
+      }
+      .x-track::-webkit-scrollbar { display: none; }
+      .x-drop { flex: 0 0 min(260px, 76vw); scroll-snap-align: start; display: grid; gap: 14px; }
+      .x-drop { --x-c: var(--x-lime); }
+      .x-drop__tile { background: #141416; border: 1px solid #222; border-radius: var(--r-l); padding: 12px 12px 16px; display: grid; gap: 12px; }
+      .x-drop__panel {
+        position: relative; margin-top: 14px; padding: 10px; background: #141416; color: var(--text-primary);
+        border: 1px solid #222; border-radius: 0 var(--r-m) var(--r-m) var(--r-m); display: grid; gap: 10px;
+      }
+      .x-drop__panel::before {
+        content: ""; position: absolute; left: -1px; top: -14px; width: 46%; height: 14px; background: #141416;
+        border: 1px solid #222; border-bottom: 0;
+        border-radius: 10px 0 0 0; clip-path: polygon(0 0, 82% 0, 100% 100%, 0 100%);
+      }
+      .x-drop__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+      .x-drop__tag { font: var(--type-tag); letter-spacing: 0.08em; padding: 3px 10px; border-radius: var(--r-pill); }
+      /* the 12% tints, pre-blended onto the #141416 panel so they stay opaque */
+      .x-drop__tag.is-legendary { color: #f5c542; background-color: #2f291b; }
+      .x-drop__tag.is-epic { color: #a46bff; background-color: #251e32; }
+      .x-drop__tag.is-rare { color: #4da3ff; background-color: #1b2532; }
+      .x-drop__when { display: grid; text-align: right; font: var(--type-tag); line-height: 1.2; letter-spacing: 0.06em; color: var(--text-secondary); }
+      .x-drop__when small { font: var(--type-caption); }
+      .x-drop__img { position: relative; }
+      .x-drop__img img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: contain; border-radius: 10px; }
+      .x-drop__price {
+        position: absolute; left: 8px; bottom: 8px; padding: 4px 12px; border-radius: var(--r-pill);
+        background: #141416; border: 1px solid #2a2a2a; color: #9aa0a6; font: var(--type-tag); letter-spacing: 0.08em;
+      }
+      .x-drop h3 { font: 600 17px/1.2 var(--sans); letter-spacing: 0.03em; display: grid; gap: 2px; padding-inline: 2px; }
+      .x-drop h3 small { font: var(--type-small); color: var(--text-secondary); letter-spacing: 0.04em; }
+      .x-drop .x-cap { justify-self: center; }
+      .x-supply { display: grid; gap: 10px; }
+      .x-supply__row { display: flex; justify-content: space-between; align-items: baseline; font: var(--type-small); color: var(--text-secondary); letter-spacing: 0.06em; text-transform: uppercase; }
+      .x-supply__row b { font: var(--type-heading); color: var(--text-primary); letter-spacing: 0.02em; text-transform: none; }
+      .x-bar-track { height: 6px; border-radius: var(--r-pill); background: var(--x-panel-2); overflow: hidden; }
+      .x-bar-fill { height: 100%; width: 0; background: var(--x-lime); border-radius: inherit; }
+      .x-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--stroke-secondary); border-bottom: 1px solid var(--stroke-secondary); }
+      .x-facts > div { padding: 14px 0; display: grid; gap: 4px; }
+      .x-facts > div + div { padding-left: 14px; border-left: 1px solid var(--stroke-secondary); }
+      .x-facts dt { font: var(--type-caption); letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-secondary); }
+      .x-facts dd { margin: 0; font: var(--type-body-strong); }
+      .x-mint__act { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+      .x-mint__act .x-cap--main { flex: 0 0 auto; margin-inline: auto; }
+      .x-wallet-line { display: flex; flex-direction: column; align-items: center; gap: 10px; font: var(--type-small); color: var(--text-secondary); }
+      .x-note { font: var(--type-small); color: var(--text-secondary); text-align: center; }
+      .x-note b { color: var(--text-primary); font-weight: var(--weight-medium); }
+
+      /* gacha */
+      .x-game { display: grid; justify-items: center; gap: 22px; }
+      .x-stage { position: relative; width: min(78vw, 360px); aspect-ratio: 5 / 7; display: grid; place-items: center; }
+      .x-crate { width: 100%; transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out); }
+      .x-crate img { width: 100%; height: auto; }
+      .x-stage.is-shaking .x-crate { animation: x-shake 1.2s ease-in-out; }
+      .x-stage.is-open .x-crate { opacity: 0; transform: scale(0.9); pointer-events: none; }
+      .x-flash { position: absolute; inset: -10%; border-radius: 50%; opacity: 0; pointer-events: none; }
+      .x-flash { background: rgb(255 255 255 / 0.22); }
+      .x-stage.is-flash .x-flash { animation: x-flash 0.5s ease-out; }
+      @keyframes x-shake {
+        0%, 100% { transform: translate(0, 0) rotate(0); }
+        10% { transform: translate(-2px, 0) rotate(-1.5deg); }
+        20% { transform: translate(2px, -1px) rotate(1.5deg); }
+        30% { transform: translate(-3px, 0) rotate(-2deg); }
+        40% { transform: translate(3px, -1px) rotate(2deg); }
+        50% { transform: translate(-3px, 1px) rotate(-2.5deg); }
+        60% { transform: translate(4px, -2px) rotate(2.5deg); }
+        70% { transform: translate(-4px, 0) rotate(-3deg); }
+        80% { transform: translate(4px, -2px) rotate(3deg); }
+        90% { transform: translate(-2px, 0) rotate(-1deg); }
+      }
+      @keyframes x-flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+
+      .x-card { position: absolute; inset: 0; perspective: 1200px; opacity: 0; pointer-events: none; transition: opacity 0.3s var(--ease-out); }
+      .x-stage.is-open .x-card { opacity: 1; pointer-events: auto; }
+      .x-card__inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateY(180deg); transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1); }
+      .x-card.is-flipped .x-card__inner { transform: rotateY(0deg); }
+      .x-face { position: absolute; inset: 0; border-radius: var(--r-m); backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; transform: translateZ(0); }
+      .x-face--front { background: var(--x-panel); }
+      .x-face--front img { display: block; width: 100%; height: 100%; object-fit: contain; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+      .x-face--back {
+        transform: rotateY(180deg) translateZ(0); display: grid; place-items: center;
+        background: var(--x-panel-2); border: 1px solid var(--stroke-primary);
+      }
+      .x-face--back span { font: var(--type-label); letter-spacing: 0.3em; padding-left: 0.3em; color: var(--x-lime); }
+      .x-face--back::before { content: ""; position: absolute; inset: 12px; border: 1px solid var(--stroke-secondary); border-radius: var(--r-s); }
+      .x-card.is-legendary .x-face--front::after {
+        content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+        border: 1.5px solid var(--x-legendary);
+        animation: x-shimmer 3.2s ease-in-out infinite;
+      }
+      @keyframes x-shimmer { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+      .x-result { min-height: 64px; display: grid; justify-items: center; gap: 6px; text-align: center; opacity: 0; transition: opacity 0.4s var(--ease-out); }
+      .x-result.is-shown { opacity: 1; }
+      .x-rarity { font: var(--type-tag); letter-spacing: 0.22em; text-transform: uppercase; }
+      .x-r-common { color: var(--x-common); } .x-r-rare { color: var(--x-rare); } .x-r-epic { color: var(--x-epic); } .x-r-legendary { color: var(--x-legendary); }
+      .x-result__name { font: var(--type-heading); letter-spacing: 0.06em; }
+      .x-result__meta { font: var(--type-small); color: var(--text-secondary); }
+      .x-game__btns { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
+      .x-game__btns [hidden] { display: none; }
+      .x-mute { justify-self: end; margin-bottom: -10px; }
+      .x-gamebox {
+        position: relative; width: 100%; max-width: 720px; display: grid; justify-items: center; gap: 22px;
+        padding: 18px clamp(16px, 4vw, 32px) 32px; background: var(--x-panel); border: 1px solid var(--x-line); border-radius: var(--r-xl);
+      }
+      .x-mute { color: var(--text-secondary); border-color: var(--x-line); }
+
+      .x-tally { width: 100%; max-width: 720px; display: grid; gap: 14px; }
+      .x-tally__row { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: center; font: var(--type-small); color: var(--text-secondary); }
+      .x-tally__row b { color: var(--text-primary); font-weight: var(--weight-medium); font-family: "Geist Mono", monospace; }
+      .x-tally__row span { display: inline-flex; align-items: center; gap: 6px; }
+      .x-dotc { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+      .x-thumbs { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; max-width: 420px; width: 100%; margin: 0 auto; }
+      .x-thumbs > div { aspect-ratio: 5 / 7; border-radius: 6px; background: var(--x-panel); border: 1px solid var(--stroke-secondary); overflow: hidden; }
+      .x-thumbs img { display: block; width: 100%; height: 100%; object-fit: contain; }
+      .x-odds { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font: var(--type-caption); color: var(--text-secondary); letter-spacing: 0.06em; }
+      .x-odds b { font-weight: var(--weight-medium); font-family: "Geist Mono", monospace; color: var(--text-primary); }
+      .x-odds caption, .x-odds-title { width: 100%; text-align: center; letter-spacing: 0.18em; text-transform: uppercase; }
+
+      /* gallery */
+      .x-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 44%), 1fr)); gap: 14px; }
+      .x-tile {
+        display: grid; gap: 10px; padding: 8px 8px 12px; border: 1px solid var(--x-line); border-radius: var(--r-m);
+        background: var(--x-panel); color: inherit; text-align: left; cursor: zoom-in; font: inherit;
+        transition: border-color var(--dur-quick) var(--ease-out), transform var(--dur-quick) var(--ease-out);
+      }
+      .x-tile:hover { border-color: color-mix(in srgb, var(--x-lime) 55%, transparent); transform: translateY(-2px); }
+      .x-tile__img { border-radius: 10px; overflow: hidden; background: var(--x-panel-2); }
+      .x-tile img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 7; object-fit: contain; }
+      .x-tile__cap { display: grid; gap: 2px; padding-inline: 2px; }
+      .x-tile__name { font: var(--type-label); letter-spacing: 0.04em; }
+      .x-tile__tag { font: var(--type-caption); letter-spacing: 0.14em; text-transform: uppercase; }
+
+      .x-lightbox {
+        position: fixed; inset: 0; z-index: 60; display: none; place-items: center; padding: 24px;
+        background: rgb(5 5 6 / 0.88); -webkit-backdrop-filter: var(--hark-blur); backdrop-filter: var(--hark-blur);
+      }
+      .x-lightbox.is-open { display: grid; }
+      .x-lightbox figure { margin: 0; display: grid; gap: 14px; justify-items: center; max-width: min(520px, 100%); }
+      .x-lightbox__img img { display: block; width: auto; height: min(72vh, 728px); max-width: 100%; aspect-ratio: 5 / 7; object-fit: contain; border-radius: var(--r-m); }
+      .x-lightbox figcaption { text-align: center; display: grid; gap: 4px; }
+      .x-lightbox__close { position: absolute; top: 12px; right: 12px; }
+
+      /* rarity */
+      .x-rare-grid { display: grid; gap: 28px; }
+      .x-types { display: flex; flex-wrap: wrap; gap: 8px; }
+      .x-types .pill { background: var(--x-panel-2); border: 1px solid var(--x-line); }
+      .x-types .pill small { color: var(--text-secondary); font-weight: var(--weight-regular); }
+      .x-rare-grid .table-wrap { background: var(--x-panel); border: 1px solid var(--x-line); border-radius: var(--r-l); padding: 8px clamp(12px, 3vw, 24px); }
+      .x-rare-grid .table-wrap th[scope="col"] { color: var(--x-lime); letter-spacing: 0.12em; text-transform: uppercase; }
+      .x-subhead { font: var(--type-tag); letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
+      .x-rname { display: inline-flex; align-items: center; gap: 8px; }
+
+      /* crate strip */
+      .x-strip {
+        display: grid; gap: 24px; align-items: center; justify-items: center; text-align: center;
+        background: var(--x-panel); border: 1px solid var(--x-line); border-radius: var(--r-xl); padding: clamp(14px, 3vw, 24px);
+      }
+      .x-strip img { width: 100%; height: auto; aspect-ratio: 3 / 1; object-fit: cover; border-radius: var(--r-l); }
+      .x-strip p em { font-style: normal; color: var(--x-lime); }
+      .x-strip p { font: var(--weight-medium) clamp(20px, 3.6vw, 30px)/1.3 var(--sans); letter-spacing: 0.06em; max-width: 26ch; }
+      .x-strip p span { color: var(--text-secondary); }
+      @media (min-width: 820px) { .x-strip { grid-template-columns: 1.1fr 1fr; text-align: left; justify-items: start; } }
+
+      /* footer */
+      .x-foot { padding-block: 40px 56px; border-top: 1px solid var(--x-line); }
+      .x-foot__in { display: grid; gap: 18px; justify-items: center; text-align: center; }
+      .x-foot img { height: 40px; width: auto; opacity: 0.9; }
+      .x-foot__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 18px; font: var(--type-small); color: var(--text-secondary); letter-spacing: 0.06em; }
+      .x-foot__links a { color: var(--text-primary); min-height: var(--tap); display: inline-flex; align-items: center; }
+
+      /* toast */
+      .x-toast {
+        position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 20px); z-index: 70;
+        transform: translate(-50%, 12px); opacity: 0; pointer-events: none;
+        max-width: calc(100vw - 32px); padding: 12px 18px; border-radius: var(--r-s);
+        background: var(--x-panel-2); border: 1px solid var(--stroke-primary); box-shadow: var(--hark-shadow);
+        font: var(--type-small); color: var(--text-primary);
+        transition: opacity var(--dur-quick) var(--ease-out), transform var(--dur-quick) var(--ease-out);
+      }
+      .x-toast.is-shown { opacity: 1; transform: translate(-50%, 0); }
+
+      @media (prefers-reduced-motion: reduce) {
+        .x-stage.is-shaking .x-crate, .x-card.is-legendary .x-face--front::after { animation: none; }
+        .x-track { scroll-behavior: auto; }
+        .x-card__inner { transition-duration: 0.01s; }
+      }
+
+      /* ---- motion ---- */
+      @keyframes x-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+      @keyframes x-zoom { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+      @keyframes x-fade { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes x-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-10px) rotate(-0.6deg); } }
+      @keyframes x-wobble {
+        0%, 100% { transform: rotate(0) scale(1, 1); }
+        25% { transform: rotate(1.6deg) scale(1.025, 0.985); }
+        50% { transform: rotate(-0.8deg) scale(0.985, 1.02); }
+        75% { transform: rotate(-1.8deg) scale(1.015, 1); }
+      }
+      @keyframes x-drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(3px, -5px); } }
+      @keyframes x-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(0.8); } }
+
+      /* hero entrance (plain CSS, ends visible even without JS) */
+      .x-hero__title { animation: x-up 0.7s var(--ease-out) both; }
+      .x-hero__art { animation: x-zoom 0.9s var(--ease-out) 0.12s both; }
+      .x-hero__tag { animation: x-up 0.7s var(--ease-out) 0.3s both; }
+      .x-stats > div { animation: x-up 0.6s var(--ease-out) both; }
+      .x-stats > div:nth-child(1) { animation-delay: 0.35s; }
+      .x-stats > div:nth-child(2) { animation-delay: 0.47s; }
+      .x-stats > div:nth-child(3) { animation-delay: 0.59s; }
+      .x-stats dd { font-variant-numeric: tabular-nums; }
+
+      /* hero logo: gentle float only */
+      .x-hero__art img { animation: x-float 5.5s ease-in-out infinite; will-change: transform; }
+      @keyframes x-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+      /* gacha idle bob on the closed crate */
+      .x-stage:not(.is-shaking):not(.is-open) .x-crate img { animation: x-bob 4.5s ease-in-out infinite; }
+
+      /* live status dot */
+      .x-status::before { animation: x-pulse 2.4s ease-in-out infinite; }
+
+      /* scroll reveal: only hidden once JS has marked the page */
+      .x-rv, .x-rv-kids > * {
+        transition: opacity 0.7s var(--ease-out) var(--x-d, 0s), translate 0.7s var(--ease-out) var(--x-d, 0s);
+      }
+      html.js .x-rv:not(.is-in) { opacity: 0; translate: 0 22px; }
+      html.js .x-rv-kids:not(.is-in) > * { opacity: 0; translate: 28px 0; }
+      .x-rv-kids > :nth-child(2) { --x-d: 0.07s; }
+      .x-rv-kids > :nth-child(3) { --x-d: 0.14s; }
+      .x-rv-kids > :nth-child(4) { --x-d: 0.21s; }
+      .x-rv-kids > :nth-child(n + 5) { --x-d: 0.28s; }
+
+      /* card tiles: lift and slight tilt */
+      .x-tile {
+        transition: opacity 0.7s var(--ease-out) var(--x-d, 0s), translate 0.7s var(--ease-out) var(--x-d, 0s),
+          transform 0.28s var(--ease-out), border-color var(--dur-quick) var(--ease-out), box-shadow 0.28s var(--ease-out);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .x-tile:hover { transform: none; }
+      .x-tile:active { transform: translateY(-3px) rotate(-0.8deg) scale(0.99); border-color: color-mix(in srgb, var(--x-lime) 55%, transparent); }
+      .x-tile:nth-child(even):active { transform: translateY(-3px) rotate(0.8deg) scale(0.99); }
+      .x-drop__tile { transition: transform 0.3s var(--ease-out), border-color var(--dur-quick) var(--ease-out); }
+      .x-drop__tile:active { transform: translateY(-3px) rotate(-0.5deg); }
+      @media (hover: hover) {
+        .x-tile:hover { transform: translateY(-6px) rotate(-1deg); box-shadow: 0 14px 26px rgb(0 0 0 / 0.4); }
+        .x-tile:nth-child(even):hover { transform: translateY(-6px) rotate(1deg); }
+        .x-drop:hover .x-drop__tile { transform: translateY(-5px) rotate(-0.6deg); border-color: #2a2a2a; }
+      }
+
+      /* offset-shadow buttons press into their shadow */
+      .x-btn--pop:active:not([disabled]) { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--x-c); transition-duration: 0.06s; }
+
+      /* nav: the raised pill behind the active tab, slid by script */
+      .x-navdot {
+        position: absolute; left: 0; top: 6px; bottom: 6px; width: 0; z-index: 0;
+        background: #262626; border-radius: var(--r-pill); opacity: 0; pointer-events: none;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 6px rgba(0, 0, 0, 0.5);
+        transition: transform 0.25s ease, width 0.25s ease, opacity var(--dur-quick) var(--ease-out);
+      }
+      .x-navdot.is-on { opacity: 1; }
+      .x-bar__nav:not(.has-dot) a.is-active { background: #262626; }
+      @media (max-width: 480px) {
+        .x-bar__nav { height: 54px; padding: 4px; scroll-snap-type: x proximity; }
+        .x-navdot { top: 4px; bottom: 4px; }
+        .x-bar__nav a { min-width: var(--tap); min-height: var(--tap); padding: 0 12px 0 10px; gap: 6px; font-size: 14px; scroll-snap-align: center; }
+      }
+      @media (max-width: 400px) {
+        .x-bar__nav a:not(.is-active) { justify-content: center; padding: 0 10px; }
+        .x-bar__nav a:not(.is-active) .x-tab__lbl { display: none; }
+      }
+
+      /* views: one page visible at a time */
+      /* fixed header; every view starts below it (fallback heights until measured) */
+      :root { --x-bar-fb: 132px; }
+      @media (min-width: 760px) { :root { --x-bar-fb: 76px; } }
+      .x-bar { position: fixed; top: 0; left: 0; right: 0; }
+      .x-view {
+        display: flex; flex-direction: column; box-sizing: border-box;
+        padding-top: calc(var(--x-bar-h, var(--x-bar-fb)) + 8px);
+        min-height: 100vh;
+        min-height: 100dvh;
+      }
+      .x-sec { scroll-margin-top: calc(var(--x-bar-h, var(--x-bar-fb)) + 16px); }
+      .x-view__body { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: center; }
+      .x-view > .x-foot { flex: none; }
+      html.x-mpa .x-view:not(.is-active) { display: none; }
+      .x-view.is-entering { animation: x-view-in 0.3s var(--ease-out); }
+      @keyframes x-view-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      @media (prefers-reduced-motion: reduce) { .x-view.is-entering { animation: none; } }
+
+      /* carousel: smooth swipe */
+      .x-track { scroll-behavior: smooth; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+      .x-sq { transition: opacity var(--dur-quick) var(--ease-out), transform 0.12s var(--ease-out); }
+      .x-sq:active:not(:disabled) { transform: scale(0.92); }
+
+      /* lightbox */
+      .x-lightbox.is-open { animation: x-fade 0.25s var(--ease-out); }
+      .x-lightbox.is-open figure { animation: x-zoom 0.35s var(--ease-out); }
+
+      @media (prefers-reduced-motion: reduce) {
+        .x-hero__title, .x-hero__art, .x-hero__tag, .x-stats > div, .x-hero__art img,
+        .x-stage .x-crate img, .x-status::before, .x-lightbox.is-open, .x-lightbox.is-open figure { animation: none !important; }
+        html.js .x-rv:not(.is-in), html.js .x-rv-kids:not(.is-in) > * { opacity: 1; translate: none; }
+        .x-rv, .x-rv-kids > *, .x-navdot { transition: none !important; }
+        .x-track { scroll-behavior: auto; }
+        .x-tile:hover, .x-tile:active, .x-tile:nth-child(even):hover, .x-tile:nth-child(even):active,
+        .x-drop:hover .x-drop__tile, .x-drop__tile:active { transform: none; }
+      }
+
+      /* intro splash: in the markup and animating from first paint (pure CSS); a <noscript> rule hides it for no-JS readers */
+      .x-splash {
+        position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: var(--gutter); overscroll-behavior: contain; isolation: isolate;
+        background: radial-gradient(ellipse at center, #111 0%, #050505 70%) #050505;
+      }
+      /* extremely faint film grain */
+      .x-splash::before {
+        content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 160px 160px;
+      }
+      html.x-splashing, html.x-splashing body { overflow: hidden; }
+      html.x-splashing .x-hero, html.x-splashing .x-hero * { animation-play-state: paused !important; }
+      .x-splash__logo {
+        display: block; width: min(62vw, 380px); height: auto;
+        opacity: 0; filter: blur(14px); transform: translateY(10px) scale(0.985);
+        animation: x-splash-in 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) forwards, x-splash-breathe 5s ease-in-out 1.2s infinite;
+      }
+      .x-splash__cap {
+        margin: 24px 0 0; color: #8a8a8a; font: 400 12px/1.4 var(--sans); letter-spacing: 0.32em; text-transform: uppercase;
+        text-align: center; padding-left: 0.32em;
+      }
+      .x-splash__cap span {
+        display: inline-block; white-space: pre; opacity: 0; transform: translateY(4px);
+        animation: x-splash-letter 0.6s ease calc(0.7s + var(--i) * 45ms) forwards;
+      }
+      .x-splash__go { display: grid; place-items: center; margin-top: 40px; min-height: 64px; }
+      .x-splash__go > * { grid-area: 1 / 1; }
+      .x-splash__btn:focus, .x-splash__btn:focus-visible { outline: none; }
+      .x-splash__btn {
+        opacity: 0; transform: translateY(18px);
+        animation: x-splash-up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 2.7s forwards;
+      }
+      .x-splash.is-loading .x-splash__btn { opacity: 0 !important; pointer-events: none; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+      /* loading line with a rolling pixel bomb */
+      .x-splash__load {
+        width: min(80vw, 520px); opacity: 0; visibility: hidden; transition: opacity 0.35s ease 0.15s;
+      }
+      .x-splash.is-loading .x-splash__load { opacity: 1; visibility: visible; }
+      .x-splash__load:focus { outline: none; }
+      .x-splash__line { position: relative; height: 2px; margin-top: 30px; background: #222; }
+      .x-splash__fill {
+        position: absolute; inset: 0; background: #c6f432; transform: scaleX(0); transform-origin: 0 50%;
+      }
+      .x-splash__bomb {
+        position: absolute; left: -13px; bottom: 2px; width: 28px; height: 30px; will-change: transform;
+      }
+      .x-splash__bomb svg { display: block; width: 28px; height: 30px; transform-origin: 13px 19px; shape-rendering: crispEdges; }
+      .x-splash__bomb .s1 { animation: x-spark 0.24s steps(1) infinite; }
+      .x-splash__bomb .s2 { animation: x-spark 0.24s steps(1) 0.12s infinite; }
+      .x-splash__bomb.is-gone { opacity: 0; transition: opacity 0.12s ease; }
+      .x-splash__pop { position: absolute; right: 0; bottom: 15px; width: 0; height: 0; pointer-events: none; }
+      .x-splash__pop i {
+        position: absolute; left: -2px; top: -2px; width: 4px; height: 4px; opacity: 0; background: #c6f432;
+      }
+      .x-splash__pop i:nth-child(2n) { background: #f2f2f2; }
+      .x-splash__pop.is-on i { animation: x-pop 0.3s ease-out forwards; }
+      .x-splash__pop.is-on i:nth-child(1) { --dx: -10px; --dy: -10px; }
+      .x-splash__pop.is-on i:nth-child(2) { --dx: 11px; --dy: -8px; }
+      .x-splash__pop.is-on i:nth-child(3) { --dx: 9px; --dy: 9px; }
+      .x-splash__pop.is-on i:nth-child(4) { --dx: -9px; --dy: 8px; }
+      .x-splash__status {
+        display: flex; justify-content: space-between; gap: 16px; margin: 14px 0 0;
+        color: #8a8a8a; font: 400 12px/1.4 var(--sans); letter-spacing: 0.24em; text-transform: uppercase;
+      }
+      .x-splash__pct { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: 0; color: #bdbdbd; min-width: 4ch; text-align: right; }
+      .x-splash__btn:active { animation: none; opacity: 1; transform: scale(0.98); }
+      .x-splash.is-leaving { pointer-events: none; animation: x-splash-out 0.6s ease forwards; }
+      .x-splash.is-leaving .x-splash__logo, .x-splash.is-leaving .x-splash__load {
+        filter: none; animation: x-splash-shrink 0.4s ease forwards;
+      }
+      @keyframes x-splash-in { to { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); } }
+      @keyframes x-splash-breathe { 0%, 100% { opacity: 1; filter: none; transform: scale(1); } 50% { opacity: 1; filter: none; transform: scale(1.02); } }
+      @keyframes x-splash-letter { to { opacity: 1; transform: translateY(0); } }
+      @keyframes x-splash-up { to { opacity: 1; transform: translateY(0); } }
+      @keyframes x-spark { 0% { opacity: 1; } 50% { opacity: 0.15; } }
+      @keyframes x-pop {
+        0% { opacity: 1; transform: translate(0, 0); }
+        100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+      }
+      @keyframes x-splash-shrink { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.98); } }
+      @keyframes x-splash-out { from { opacity: 1; } to { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) {
+        .x-splash, .x-splash *, .x-splash *::after, .x-splash.is-leaving, .x-splash.is-leaving * { animation: none !important; transition: none !important; }
+        .x-splash__logo { opacity: 1; filter: none; transform: none; }
+        .x-splash__cap span, .x-splash__btn { opacity: 1; transform: none; }
+        .x-splash__bomb, .x-splash__pop { display: none; }
+        .x-splash__btn:hover span { transform: none; }
+      }
+    </style>
+    <noscript><style>.x-splash { display: none !important; }</style></noscript>
+    <script>document.documentElement.classList.add("x-splashing", "x-mpa");</script>
+  </head>
+  <body>
+    <div class="x-splash" id="x-splash" role="dialog" aria-modal="true" aria-label="Welcome to GEARVAULT">
+      <img class="x-splash__logo" src="logo_white.png" alt="GEARVAULT" />
+      <p class="x-splash__cap" aria-label="2,222 Weapons · Robinhood Chain"><span aria-hidden="true" style="--i:0">2</span><span aria-hidden="true" style="--i:1">,</span><span aria-hidden="true" style="--i:2">2</span><span aria-hidden="true" style="--i:3">2</span><span aria-hidden="true" style="--i:4">2</span><span aria-hidden="true" style="--i:5"> </span><span aria-hidden="true" style="--i:6">W</span><span aria-hidden="true" style="--i:7">e</span><span aria-hidden="true" style="--i:8">a</span><span aria-hidden="true" style="--i:9">p</span><span aria-hidden="true" style="--i:10">o</span><span aria-hidden="true" style="--i:11">n</span><span aria-hidden="true" style="--i:12">s</span><span aria-hidden="true" style="--i:13"> </span><span aria-hidden="true" style="--i:14">·</span><span aria-hidden="true" style="--i:15"> </span><span aria-hidden="true" style="--i:16">R</span><span aria-hidden="true" style="--i:17">o</span><span aria-hidden="true" style="--i:18">b</span><span aria-hidden="true" style="--i:19">i</span><span aria-hidden="true" style="--i:20">n</span><span aria-hidden="true" style="--i:21">h</span><span aria-hidden="true" style="--i:22">o</span><span aria-hidden="true" style="--i:23">o</span><span aria-hidden="true" style="--i:24">d</span><span aria-hidden="true" style="--i:25"> </span><span aria-hidden="true" style="--i:26">C</span><span aria-hidden="true" style="--i:27">h</span><span aria-hidden="true" style="--i:28">a</span><span aria-hidden="true" style="--i:29">i</span><span aria-hidden="true" style="--i:30">n</span></p>
+      <div class="x-splash__go">
+        <button class="x-cap x-splash__btn" type="button" data-splash-go><span class="x-cap__title">Enter the vault</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+        <div class="x-splash__load" data-splash-load>
+          <div class="x-splash__line" aria-hidden="true">
+            <span class="x-splash__fill" data-splash-fill></span>
+            <span class="x-splash__bomb" data-splash-bomb>
+              <svg viewBox="0 0 14 15" width="28" height="30" data-splash-ball>
+                <g fill="#4a4a4a"><rect x="4" y="4" width="5" height="1"/><rect x="3" y="5" width="7" height="1"/><rect x="2" y="6" width="9" height="1"/><rect x="1" y="7" width="11" height="5"/><rect x="2" y="12" width="9" height="1"/><rect x="3" y="13" width="7" height="1"/><rect x="4" y="14" width="5" height="1"/></g>
+                <g fill="#151515"><rect x="4" y="5" width="5" height="1"/><rect x="3" y="6" width="7" height="1"/><rect x="2" y="7" width="9" height="5"/><rect x="3" y="12" width="7" height="1"/><rect x="4" y="13" width="5" height="1"/></g>
+                <rect x="4" y="7" width="1" height="1" fill="#ffffff"/><rect x="4" y="8" width="1" height="1" fill="#6a6a6a"/><rect x="5" y="7" width="1" height="1" fill="#6a6a6a"/>
+                <rect x="5" y="3" width="3" height="1" fill="#5a5a5a"/>
+                <g fill="#a07850"><rect x="8" y="2" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/></g>
+                <g class="s1"><rect x="10" y="0" width="1" height="1" fill="#ffd23f"/><rect x="11" y="1" width="1" height="1" fill="#ff8a1f"/></g>
+                <g class="s2"><rect x="11" y="0" width="1" height="1" fill="#ff8a1f"/><rect x="10" y="1" width="1" height="1" fill="#ffd23f"/></g>
+              </svg>
+            </span>
+            <span class="x-splash__pop" data-splash-pop><i></i><i></i><i></i><i></i></span>
+          </div>
+          <p class="x-splash__status"><span role="status">Loading the vault…</span><span class="x-splash__pct" data-splash-pct aria-hidden="true">0%</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="x-site" id="top">
+      <header class="x-bar">
+        <div class="x-wrap x-bar__in">
+          <a class="x-bar__logo" href="#home" aria-label="GEARVAULT home"><img src="logo_white.png" alt="GEARVAULT" /></a>
+          <nav class="x-bar__nav" aria-label="Pages">
+            <a href="#home" aria-label="Home"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1.2 1 7.4h2v7.1h3.6V10h2.8v4.5H13V7.4h2z"/></svg></span><span class="x-tab__lbl">Home</span></a><a href="#mint" aria-label="Mint"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 .8l6.3 3.6v7.2L8 15.2 1.7 11.6V4.4z"/></svg></span><span class="x-tab__lbl">Mint</span></a><a href="#crate" aria-label="Crate"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1 1.8 4.2 8 7.4l6.2-3.2zM1.2 5.3v6.5L7.4 15V8.5zm13.6 0L8.6 8.5V15l6.2-3.2z"/></svg></span><span class="x-tab__lbl">Crate</span></a><a href="#checker" aria-label="Checker"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 .8 2 3v4.6c0 3.6 2.6 6.6 6 7.6 3.4-1 6-4 6-7.6V3zm3.1 5.1-1-1-3 3-1.3-1.3-1 1 2.3 2.3z"/></svg></span><span class="x-tab__lbl">Checker</span></a><a href="#gallery" aria-label="Gallery"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2"/></svg></span><span class="x-tab__lbl">Gallery</span></a>
+          </nav>
+          <div class="x-bar__right">
+            <button class="x-cap x-cap--sm" type="button" data-wallet><span class="x-cap__title" data-wallet-label>Connect Wallet</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3" /><rect x="4" y="8" width="16" height="11" rx="2.5" /><path d="M16 13.5h.01" /></svg></span></button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <div class="x-view is-active" data-view="home" aria-label="Home">
+        <div class="x-view__body">
+        <section class="x-hero">
+          <div class="x-wrap x-hero__grid">
+            <div class="x-hero__title">
+              <p class="x-eyebrow">GEARVAULT · NFT collection</p>
+              <h1>
+                <span class="x-h1a">Collect, Pull &amp; Equip<sup aria-hidden="true">✱</sup></span>
+                <span class="x-h1b">Pixel Weapon NFTs</span>
+              </h1>
+              <div class="x-hero__ctas">
+                <span class="x-well"><a class="x-key" href="#crate">Open crate<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8L12 3.5 20.5 8v8L12 20.5 3.5 16z" /><path d="M3.5 8L12 12.5 20.5 8M12 12.5v8" /></svg></a></span>
+                <button class="x-cap" type="button" disabled><span class="x-cap__title">Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </div>
+              <svg class="x-arrow" viewBox="0 0 100 80" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 8 C 34 2, 66 14, 64 40 C 62 58, 44 58, 48 45 C 52 32, 78 44, 88 70" />
+                <path d="M78 66 L 88.5 71 L 91 60" />
+              </svg>
+            </div>
+
+            <div class="x-hero__art">
+              <img src="logo_white.png" alt="GEARVAULT" width="684" height="525" decoding="async" />
+            </div>
+
+            <dl class="x-stats">
+              <div><dt>Weapons</dt><dd>2,222</dd></div>
+              <div><dt>Types</dt><dd>22</dd></div>
+              <div><dt>Skins</dt><dd>12</dd></div>
+            </dl>
+
+            <div class="x-fan is-dealing" data-fan>
+              <div class="x-fan__float">
+                <button class="x-fan__card" type="button" style="--i: 0" data-file="card_512.jpg" aria-label="Farsight, Woodland skin, Common"><img width="800" height="1120" decoding="async" src="card_512.jpg" alt="" /></button>
+                <button class="x-fan__card" type="button" style="--i: 1" data-file="card_387.jpg" aria-label="Cyclone, Teal skin, Rare"><img width="800" height="1120" decoding="async" src="card_387.jpg" alt="" /></button>
+                <button class="x-fan__card" type="button" style="--i: 2" data-file="card_1939.jpg" aria-label="Rustbucket, One of One skin, Legendary"><img width="800" height="1120" decoding="async" src="card_1939.jpg" alt="" /></button>
+                <button class="x-fan__card" type="button" style="--i: 3" data-file="card_478.jpg" aria-label="Thunderclap, Lava skin, Epic"><img width="800" height="1120" decoding="async" src="card_478.jpg" alt="" /></button>
+                <button class="x-fan__card" type="button" style="--i: 4" data-file="card_973.jpg" aria-label="Phantom, Diamond skin, Legendary"><img width="800" height="1120" decoding="async" src="card_973.jpg" alt="" /></button>
+              </div>
+            </div>
+
+            <p class="x-hero__tag">2,222 blocky 3D weapon cards. 22 types, 12 skins, built on Robinhood Chain.</p>
+          </div>
+        </section>
+
+        <section class="x-sec">
+          <div class="x-wrap">
+            <div class="x-drops__head">
+              <div class="x-head">
+                <p class="x-eyebrow">Featured</p>
+                <h2>Drops</h2>
+              </div>
+              <div class="x-drops__side">
+                <p>The rarest pulls in the vault. Legendary and Epic cards land at mint; price and date still to be announced.</p>
+                <div class="x-drops__nav">
+                  <button class="x-sq" type="button" data-drops="-1" aria-label="Previous drops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg></button>
+                  <button class="x-sq x-sq--fill" type="button" data-drops="1" aria-label="Next drops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg></button>
+                </div>
+              </div>
+            </div>
+            <div class="x-track" data-track>
+              <article class="x-drop">
+                <div class="x-drop__tile">
+                  <div class="x-drop__panel">
+                    <div class="x-drop__top"><span class="x-drop__tag is-legendary">Legendary</span><span class="x-drop__when"><small>Mint in</small>TBA</span></div>
+                    <div class="x-drop__img"><img width="800" height="1120" decoding="async" src="card_973.jpg" alt="Phantom, Diamond skin" loading="lazy" /><span class="x-drop__price">Price TBA</span></div>
+                  </div>
+                  <h3>Phantom <small>Diamond</small></h3>
+                </div>
+                <button class="x-cap" type="button" disabled><span class="x-cap__title">Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </article>
+              <article class="x-drop">
+                <div class="x-drop__tile">
+                  <div class="x-drop__panel">
+                    <div class="x-drop__top"><span class="x-drop__tag is-legendary">Legendary</span><span class="x-drop__when"><small>Mint in</small>TBA</span></div>
+                    <div class="x-drop__img"><img width="800" height="1120" decoding="async" src="card_1926.jpg" alt="Bulwark, Royal Gold skin" loading="lazy" /><span class="x-drop__price">Price TBA</span></div>
+                  </div>
+                  <h3>Bulwark <small>Royal Gold</small></h3>
+                </div>
+                <button class="x-cap" type="button" disabled><span class="x-cap__title">Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </article>
+              <article class="x-drop">
+                <div class="x-drop__tile">
+                  <div class="x-drop__panel">
+                    <div class="x-drop__top"><span class="x-drop__tag is-legendary">Legendary</span><span class="x-drop__when"><small>Mint in</small>TBA</span></div>
+                    <div class="x-drop__img"><img width="800" height="1120" decoding="async" src="card_1939.jpg" alt="Rustbucket, One of One skin" loading="lazy" /><span class="x-drop__price">Price TBA</span></div>
+                  </div>
+                  <h3>Rustbucket <small>One of One</small></h3>
+                </div>
+                <button class="x-cap" type="button" disabled><span class="x-cap__title">Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </article>
+              <article class="x-drop">
+                <div class="x-drop__tile">
+                  <div class="x-drop__panel">
+                    <div class="x-drop__top"><span class="x-drop__tag is-legendary">Legendary</span><span class="x-drop__when"><small>Mint in</small>TBA</span></div>
+                    <div class="x-drop__img"><img width="800" height="1120" decoding="async" src="card_475.jpg" alt="Outlaw, Diamond skin" loading="lazy" /><span class="x-drop__price">Price TBA</span></div>
+                  </div>
+                  <h3>Outlaw <small>Diamond</small></h3>
+                </div>
+                <button class="x-cap" type="button" disabled><span class="x-cap__title">Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </article>
+              <article class="x-drop">
+                <div class="x-drop__tile">
+                  <div class="x-drop__panel">
+                    <div class="x-drop__top"><span class="x-drop__tag is-epic">Epic</span><span class="x-drop__when"><small>Mint in</small>TBA</span></div>
+                    <div class="x-drop__img"><img width="800" height="1120" decoding="async" src="card_487.jpg" alt="Nova, Frost Tech skin" loading="lazy" /><span class="x-drop__price">Price TBA</span></div>
+                  </div>
+                  <h3>Nova <small>Frost Tech</small></h3>
+                </div>
+                <button class="x-cap" type="button" disabled><span class="x-cap__title">Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </article>
+              <article class="x-drop">
+                <div class="x-drop__tile">
+                  <div class="x-drop__panel">
+                    <div class="x-drop__top"><span class="x-drop__tag is-epic">Epic</span><span class="x-drop__when"><small>Mint in</small>TBA</span></div>
+                    <div class="x-drop__img"><img width="800" height="1120" decoding="async" src="card_773.jpg" alt="Skybreaker, Frost Tech skin" loading="lazy" /><span class="x-drop__price">Price TBA</span></div>
+                  </div>
+                  <h3>Skybreaker <small>Frost Tech</small></h3>
+                </div>
+                <button class="x-cap" type="button" disabled><span class="x-cap__title">Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </article>
+              <article class="x-drop">
+                <div class="x-drop__tile">
+                  <div class="x-drop__panel">
+                    <div class="x-drop__top"><span class="x-drop__tag is-epic">Epic</span><span class="x-drop__when"><small>Mint in</small>TBA</span></div>
+                    <div class="x-drop__img"><img width="800" height="1120" decoding="async" src="card_268.jpg" alt="Whiteout, Lava skin" loading="lazy" /><span class="x-drop__price">Price TBA</span></div>
+                  </div>
+                  <h3>Whiteout <small>Lava</small></h3>
+                </div>
+                <button class="x-cap" type="button" disabled><span class="x-cap__title">Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="x-sec">
+          <div class="x-wrap x-strip">
+            <img src="banner.jpg" alt="GEARVAULT weapon cards lined up" loading="lazy" />
+            <p>Every card is a <em>weapon</em>. <span>Every weapon has a story.</span></p>
+          </div>
+        </section>
+        </div>
+        </div>
+
+        <div class="x-view" data-view="crate" aria-label="Crate">
+        <div class="x-view__body">
+        <section class="x-sec">
+          <div class="x-wrap x-game">
+            <div class="x-head x-head--center">
+              <p class="x-eyebrow">Free · just for fun</p>
+              <h2>Open the Vault Crate</h2>
+              <p class="x-sub">No wallet, no chain. Pull a card at real supply odds.</p>
+            </div>
+            <div class="x-gamebox">
+              <button class="x-btn x-btn--sm x-mute" type="button" data-mute aria-pressed="false">Sound on</button>
+              <div class="x-stage" data-stage>
+                <div class="x-flash"></div>
+                <div class="x-crate"><img src="crate_closed.png" alt="A closed GEARVAULT crate" /></div>
+                <div class="x-card" data-card aria-live="polite">
+                  <div class="x-card__inner">
+                    <div class="x-face x-face--front" data-front></div>
+                    <div class="x-face x-face--back"><span>GEARVAULT</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="x-result" data-result aria-live="polite">
+                <p class="x-rarity" data-r-rarity></p>
+                <p class="x-result__name" data-r-name></p>
+                <p class="x-result__meta" data-r-meta></p>
+              </div>
+              <div class="x-game__btns">
+                <span class="x-well"><button class="x-key" type="button" data-open>Open crate<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8L12 3.5 20.5 8v8L12 20.5 3.5 16z" /><path d="M3.5 8L12 12.5 20.5 8M12 12.5v8" /></svg></button></span>
+                <span class="x-well"><button class="x-key" type="button" data-again hidden>Open again<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8L12 3.5 20.5 8v8L12 20.5 3.5 16z" /><path d="M3.5 8L12 12.5 20.5 8M12 12.5v8" /></svg></button></span>
+                <a class="x-cap" data-share target="_blank" rel="noopener" hidden href="https://x.com/intent/tweet"><span class="x-cap__title">Share on X</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 16L16 8M9.5 8H16v6.5" /></svg></span></a>
+              </div>
+            </div>
+            <div class="x-tally">
+              <div class="x-tally__row" aria-live="polite">
+                <span>Pulls <b data-t-total>0</b></span>
+                <span class="x-r-common"><i class="x-dotc"></i><span style="color:var(--text-secondary)">Common</span> <b data-t="Common">0</b></span>
+                <span class="x-r-rare"><i class="x-dotc"></i><span style="color:var(--text-secondary)">Rare</span> <b data-t="Rare">0</b></span>
+                <span class="x-r-epic"><i class="x-dotc"></i><span style="color:var(--text-secondary)">Epic</span> <b data-t="Epic">0</b></span>
+                <span class="x-r-legendary"><i class="x-dotc"></i><span style="color:var(--text-secondary)">Legendary</span> <b data-t="Legendary">0</b></span>
+              </div>
+              <div class="x-thumbs" data-thumbs aria-label="Last 8 pulls">
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+              </div>
+              <p class="x-odds">
+                <span class="x-odds-title">Odds</span>
+                <span class="x-r-common">Common <b>50%</b></span>
+                <span class="x-r-rare">Rare <b>30%</b></span>
+                <span class="x-r-epic">Epic <b>15%</b></span>
+                <span class="x-r-legendary">Legendary <b>5%</b></span>
+              </p>
+            </div>
+          </div>
+        </section>
+        </div>
+        </div>
+
+        <div class="x-view" data-view="gallery" aria-label="Gallery">
+        <div class="x-view__body">
+        <section class="x-sec">
+          <div class="x-wrap">
+            <div class="x-head">
+              <p class="x-eyebrow">Gallery</p>
+              <h2>22 cards from the vault</h2>
+              <p class="x-sub">Tap a card to enlarge.</p>
+            </div>
+            <div class="x-grid" data-grid>
+              <button class="x-tile" type="button" data-file="card_1935.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_1935.jpg" alt="Twin Fang, Urban Grey skin, #1935" /></span><span class="x-tile__cap"><span class="x-tile__name">Twin Fang <small class="sub">#1935</small></span><span class="x-tile__tag x-r-common">Common · Urban Grey</span></span></button>
+              <button class="x-tile" type="button" data-file="card_678.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_678.jpg" alt="Vanguard, Classic skin, #678" /></span><span class="x-tile__cap"><span class="x-tile__name">Vanguard <small class="sub">#678</small></span><span class="x-tile__tag x-r-common">Common · Classic</span></span></button>
+              <button class="x-tile" type="button" data-file="card_512.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_512.jpg" alt="Farsight, Woodland skin, #512" /></span><span class="x-tile__cap"><span class="x-tile__name">Farsight <small class="sub">#512</small></span><span class="x-tile__tag x-r-common">Common · Woodland</span></span></button>
+              <button class="x-tile" type="button" data-file="card_349.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_349.jpg" alt="Inferno, Desert skin, #349" /></span><span class="x-tile__cap"><span class="x-tile__name">Inferno <small class="sub">#349</small></span><span class="x-tile__tag x-r-common">Common · Desert</span></span></button>
+              <button class="x-tile" type="button" data-file="card_1283.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_1283.jpg" alt="Enforcer, Classic skin, #1283" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Enforcer <small class="sub">#1283</small></span><span class="x-tile__tag x-r-common">Common · Classic</span></span></button>
+              <button class="x-tile" type="button" data-file="card_725.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_725.jpg" alt="Tempest, Urban Grey skin, #725" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Tempest <small class="sub">#725</small></span><span class="x-tile__tag x-r-common">Common · Urban Grey</span></span></button>
+              <button class="x-tile" type="button" data-file="card_743.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_743.jpg" alt="Viper, Urban Grey skin, #743" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Viper <small class="sub">#743</small></span><span class="x-tile__tag x-r-common">Common · Urban Grey</span></span></button>
+              <button class="x-tile" type="button" data-file="card_1565.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_1565.jpg" alt="Hornet, Urban Grey skin, #1565" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Hornet <small class="sub">#1565</small></span><span class="x-tile__tag x-r-common">Common · Urban Grey</span></span></button>
+              <button class="x-tile" type="button" data-file="card_2159.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_2159.jpg" alt="Raptor, Crimson skin, #2159" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Raptor <small class="sub">#2159</small></span><span class="x-tile__tag x-r-rare">Rare · Crimson</span></span></button>
+              <button class="x-tile" type="button" data-file="card_835.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_835.jpg" alt="Sentinel, Arctic skin, #835" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Sentinel <small class="sub">#835</small></span><span class="x-tile__tag x-r-rare">Rare · Arctic</span></span></button>
+              <button class="x-tile" type="button" data-file="card_1835.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_1835.jpg" alt="Juggernaut, Pink Candy skin, #1835" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Juggernaut <small class="sub">#1835</small></span><span class="x-tile__tag x-r-rare">Rare · Pink Candy</span></span></button>
+              <button class="x-tile" type="button" data-file="card_387.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_387.jpg" alt="Cyclone, Teal skin, #387" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Cyclone <small class="sub">#387</small></span><span class="x-tile__tag x-r-rare">Rare · Teal</span></span></button>
+              <button class="x-tile" type="button" data-file="card_1944.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_1944.jpg" alt="Shrapnel, Crimson skin, #1944" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Shrapnel <small class="sub">#1944</small></span><span class="x-tile__tag x-r-rare">Rare · Crimson</span></span></button>
+              <button class="x-tile" type="button" data-file="card_1923.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_1923.jpg" alt="Reaper, Arctic skin, #1923" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Reaper <small class="sub">#1923</small></span><span class="x-tile__tag x-r-rare">Rare · Arctic</span></span></button>
+              <button class="x-tile" type="button" data-file="card_487.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_487.jpg" alt="Nova, Frost Tech skin, #487" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Nova <small class="sub">#487</small></span><span class="x-tile__tag x-r-epic">Epic · Frost Tech</span></span></button>
+              <button class="x-tile" type="button" data-file="card_268.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_268.jpg" alt="Whiteout, Lava skin, #268" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Whiteout <small class="sub">#268</small></span><span class="x-tile__tag x-r-epic">Epic · Lava</span></span></button>
+              <button class="x-tile" type="button" data-file="card_478.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_478.jpg" alt="Thunderclap, Lava skin, #478" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Thunderclap <small class="sub">#478</small></span><span class="x-tile__tag x-r-epic">Epic · Lava</span></span></button>
+              <button class="x-tile" type="button" data-file="card_773.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_773.jpg" alt="Skybreaker, Frost Tech skin, #773" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Skybreaker <small class="sub">#773</small></span><span class="x-tile__tag x-r-epic">Epic · Frost Tech</span></span></button>
+              <button class="x-tile" type="button" data-file="card_973.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_973.jpg" alt="Phantom, Diamond skin, #973" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Phantom <small class="sub">#973</small></span><span class="x-tile__tag x-r-legendary">Legendary · Diamond</span></span></button>
+              <button class="x-tile" type="button" data-file="card_1926.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_1926.jpg" alt="Bulwark, Royal Gold skin, #1926" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Bulwark <small class="sub">#1926</small></span><span class="x-tile__tag x-r-legendary">Legendary · Royal Gold</span></span></button>
+              <button class="x-tile" type="button" data-file="card_1939.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_1939.jpg" alt="Rustbucket, One of One skin, #1939" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Rustbucket <small class="sub">#1939</small></span><span class="x-tile__tag x-r-legendary">Legendary · One of One</span></span></button>
+              <button class="x-tile" type="button" data-file="card_475.jpg"><span class="x-tile__img"><img width="800" height="1120" decoding="async" src="card_475.jpg" alt="Outlaw, Diamond skin, #475" loading="lazy" /></span><span class="x-tile__cap"><span class="x-tile__name">Outlaw <small class="sub">#475</small></span><span class="x-tile__tag x-r-legendary">Legendary · Diamond</span></span></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="x-sec" id="rarity-table">
+          <div class="x-wrap x-rare-grid">
+            <div class="x-head">
+              <p class="x-eyebrow">Rarity</p>
+              <h2>Four tiers, 12 skins</h2>
+              <p class="x-sub">Half the vault is Common. Only 111 cards are Legendary, including 22 one-of-ones.</p>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th scope="col">Rarity</th><th scope="col">Supply</th><th scope="col">Share</th><th scope="col">Skins</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row"><span class="x-rname x-r-common"><i class="x-dotc"></i>Common</span></th>
+                    <td class="num">1,111</td><td class="muted">50%</td><td>Classic, Woodland, Desert, Urban Grey</td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><span class="x-rname x-r-rare"><i class="x-dotc"></i>Rare</span></th>
+                    <td class="num">667</td><td class="muted">30%</td><td>Arctic, Crimson, Teal, Pink Candy</td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><span class="x-rname x-r-epic"><i class="x-dotc"></i>Epic</span></th>
+                    <td class="num">333</td><td class="muted">15%</td><td>Lava, Frost Tech</td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><span class="x-rname x-r-legendary"><i class="x-dotc"></i>Legendary</span></th>
+                    <td class="num">111</td><td class="muted">5%</td><td>Royal Gold, Diamond <small class="sub">plus 22 one-of-ones</small></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <p class="x-subhead">22 weapon types</p>
+              <div class="x-types">
+                <span class="pill">Breacher <small>shotgun</small></span>
+                <span class="pill">Vanguard <small>rifle</small></span>
+                <span class="pill">Farsight <small>sniper</small></span>
+                <span class="pill">Viper <small>pistol</small></span>
+                <span class="pill">Hornet <small>SMG</small></span>
+                <span class="pill">Skybreaker <small>rocket</small></span>
+                <span class="pill">Juggernaut <small>LMG</small></span>
+                <span class="pill">Outlaw <small>revolver</small></span>
+                <span class="pill">Cyclone <small>minigun</small></span>
+                <span class="pill">Thunderclap <small>grenade launcher</small></span>
+                <span class="pill">Nova <small>plasma</small></span>
+                <span class="pill">Raptor <small>carbine</small></span>
+                <span class="pill">Sentinel <small>DMR</small></span>
+                <span class="pill">Twin Fang <small>double barrel</small></span>
+                <span class="pill">Inferno <small>flamethrower</small></span>
+                <span class="pill">Tempest <small>railgun</small></span>
+                <span class="pill">Bulwark <small>vest</small></span>
+                <span class="pill">Shrapnel <small>hand grenade</small></span>
+                <span class="pill">Phantom <small>smoke</small></span>
+                <span class="pill">Whiteout <small>flashbang</small></span>
+                <span class="pill">Enforcer <small>baton</small></span>
+                <span class="pill">Reaper <small>knife</small></span>
+              </div>
+            </div>
+          </div>
+        </section>
+        </div>
+        </div>
+
+        <div class="x-view" data-view="mint" aria-label="Mint">
+        <div class="x-view__body">
+        <section class="x-sec">
+          <div class="x-wrap">
+            <div class="x-head x-head--center">
+              <p class="x-eyebrow">Mint</p>
+              <h2>Vault opens soon</h2>
+            </div>
+            <div class="x-panel x-mint">
+              <div class="x-mint__top">
+                <span class="x-status" data-mint-status>Coming soon</span>
+              </div>
+              <div class="x-supply">
+                <div class="x-supply__row"><span>Supply</span><b><span data-minted>0</span> / 2,222</b></div>
+                <div class="x-bar-track" role="progressbar" aria-label="Minted" aria-valuemin="0" aria-valuemax="2222" aria-valuenow="0"><div class="x-bar-fill" data-supply-fill></div></div>
+              </div>
+              <dl class="x-facts">
+                <div><dt>Price</dt><dd data-price>TBA</dd></div>
+                <div><dt>Mint date</dt><dd>TBA</dd></div>
+                <div><dt>Chain</dt><dd data-chain>Robinhood Chain</dd></div>
+              </dl>
+              <div class="x-mint__act">
+                <button class="x-cap x-cap--main" type="button" data-mint disabled><span class="x-cap__title" data-mint-title>Mint · soon</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+              </div>
+              <div class="x-wallet-line">
+                <span>Wallet: <span class="x-mono" data-wallet-addr>not connected</span></span>
+                <button class="x-cap" type="button" data-wallet><span class="x-cap__title" data-wallet-label>Connect Wallet</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3" /><rect x="4" y="8" width="16" height="11" rx="2.5" /><path d="M16 13.5h.01" /></svg></span></button>
+              </div>
+              <p class="x-note">Whitelist: <b>first 111 wallet addresses</b> from our X crate post.</p>
+            </div>
+          </div>
+        </section>
+        </div>
+        </div>
+
+        <div class="x-view" data-view="checker" aria-label="Checker">
+        <div class="x-view__body">
+        <section class="x-sec">
+          <div class="x-wrap">
+            <div class="x-head x-head--center">
+              <p class="x-eyebrow">Whitelist</p>
+              <div class="x-check__title"><h2>Wallet Checker</h2><span class="x-soon" data-check-soon>Soon</span></div>
+              <p class="x-sub">Check if your wallet is GTD for the GEARVAULT mint.</p>
+            </div>
+            <div class="x-check">
+              <form class="x-check__form" data-check-form novalidate>
+                <div class="x-check__row">
+                  <input class="x-check__input" id="x-check-addr" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="0x… paste your wallet address" aria-label="Wallet address" aria-describedby="x-check-msg" data-check-input />
+                  <button class="x-cap" type="submit"><span class="x-cap__title">Check wallet</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+                </div>
+                <div class="x-check__aux">
+                  <button class="x-check__use" type="button" data-check-use>Use connected wallet</button>
+                  <p class="x-check__msg" id="x-check-msg" role="alert" data-check-msg></p>
+                </div>
+              </form>
+              <div class="x-check__res" data-check-res aria-live="polite" hidden></div>
+            </div>
+          </div>
+        </section>
+        </div>
+        </div>
+      </main>
+
+      <footer class="x-foot">
+        <div class="x-wrap x-foot__in">
+          <img src="logo_white.png" alt="GEARVAULT" loading="lazy" />
+          <div class="x-foot__links">
+            <a href="https://x.com/GearVaultNFT" target="_blank" rel="noopener">@GearVaultNFT on X</a>
+            <span style="display:inline-flex;align-items:center">Built on Robinhood Chain</span>
+            <span style="display:inline-flex;align-items:center">© 2026 GEARVAULT</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <div class="x-lightbox" data-lightbox role="dialog" aria-modal="true" aria-label="Card">
+      <button class="x-btn x-btn--sm x-lightbox__close" type="button" data-lb-close>Close</button>
+      <figure>
+        <div class="x-lightbox__img" data-lb-img></div>
+        <figcaption><span class="x-rarity" data-lb-rarity></span><span class="x-result__name" data-lb-name></span><span class="x-result__meta" data-lb-meta></span></figcaption>
+      </figure>
+    </div>
+    <div class="x-toast" data-toast role="status" aria-live="polite"></div>
+
+    <script src="hark.js"></script>
+<script>
+      /* ---- Mint config: wire these up when the contract is live ---- */
+      var CONTRACT_ADDRESS = "";
+      var MINT_PRICE = "TBA";
+      var MINT_LIVE = false;
+      var CHAIN_NAME = "Robinhood Chain";
+      var MAX_SUPPLY = 2222;
+      var MAX_PER_TX = 5;
+
+      /* ---- Card pool ---- */
+      var POOL = [
+        { file: "card_1935.jpg", id: 1935, name: "Twin Fang", skin: "Urban Grey", rarity: "Common" },
+        { file: "card_678.jpg", id: 678, name: "Vanguard", skin: "Classic", rarity: "Common" },
+        { file: "card_512.jpg", id: 512, name: "Farsight", skin: "Woodland", rarity: "Common" },
+        { file: "card_349.jpg", id: 349, name: "Inferno", skin: "Desert", rarity: "Common" },
+        { file: "card_1283.jpg", id: 1283, name: "Enforcer", skin: "Classic", rarity: "Common" },
+        { file: "card_725.jpg", id: 725, name: "Tempest", skin: "Urban Grey", rarity: "Common" },
+        { file: "card_743.jpg", id: 743, name: "Viper", skin: "Urban Grey", rarity: "Common" },
+        { file: "card_1565.jpg", id: 1565, name: "Hornet", skin: "Urban Grey", rarity: "Common" },
+        { file: "card_2159.jpg", id: 2159, name: "Raptor", skin: "Crimson", rarity: "Rare" },
+        { file: "card_835.jpg", id: 835, name: "Sentinel", skin: "Arctic", rarity: "Rare" },
+        { file: "card_1835.jpg", id: 1835, name: "Juggernaut", skin: "Pink Candy", rarity: "Rare" },
+        { file: "card_387.jpg", id: 387, name: "Cyclone", skin: "Teal", rarity: "Rare" },
+        { file: "card_1944.jpg", id: 1944, name: "Shrapnel", skin: "Crimson", rarity: "Rare" },
+        { file: "card_1923.jpg", id: 1923, name: "Reaper", skin: "Arctic", rarity: "Rare" },
+        { file: "card_487.jpg", id: 487, name: "Nova", skin: "Frost Tech", rarity: "Epic" },
+        { file: "card_268.jpg", id: 268, name: "Whiteout", skin: "Lava", rarity: "Epic" },
+        { file: "card_478.jpg", id: 478, name: "Thunderclap", skin: "Lava", rarity: "Epic" },
+        { file: "card_773.jpg", id: 773, name: "Skybreaker", skin: "Frost Tech", rarity: "Epic" },
+        { file: "card_973.jpg", id: 973, name: "Phantom", skin: "Diamond", rarity: "Legendary" },
+        { file: "card_1926.jpg", id: 1926, name: "Bulwark", skin: "Royal Gold", rarity: "Legendary" },
+        { file: "card_1939.jpg", id: 1939, name: "Rustbucket", skin: "One of One", rarity: "Legendary" },
+        { file: "card_475.jpg", id: 475, name: "Outlaw", skin: "Diamond", rarity: "Legendary" }
+      ];
+      var ODDS = [["Common", 50], ["Rare", 30], ["Epic", 15], ["Legendary", 5]];
+
+      (function () {
+        var $ = function (s, r) { return (r || document).querySelector(s); };
+        var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+        var wait = function (ms) { return new Promise(function (res) { setTimeout(res, ms); }); };
+        var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        /* toast */
+        var toastEl = $("[data-toast]"), toastT;
+        function toast(msg) {
+          toastEl.textContent = msg;
+          toastEl.classList.add("is-shown");
+          clearTimeout(toastT);
+          toastT = setTimeout(function () { toastEl.classList.remove("is-shown"); }, 3200);
+        }
+
+        /* image lookup: clone the gallery's own images */
+        function cardImg(file) {
+          var src = $('.x-tile[data-file="' + file + '"] img');
+          var img = src.cloneNode(true);
+          img.removeAttribute("loading");
+          return img;
+        }
+        function byFile(file) { return POOL.filter(function (c) { return c.file === file; })[0]; }
+
+        /* ---- mint panel ---- */
+        $("[data-price]").textContent = MINT_PRICE;
+        $("[data-chain]").textContent = CHAIN_NAME;
+        var minted = 0;
+        $("[data-minted]").textContent = minted.toLocaleString("en-US");
+        $("[data-supply-fill]").style.width = (minted / MAX_SUPPLY) * 100 + "%";
+        var qty = 1, mintBtn = $("[data-mint]"); /* mint quantity fixed at 1 */
+        function renderQty() {
+          $("[data-mint-title]").textContent = MINT_LIVE ? "Mint " + qty : "Mint · soon";
+        }
+        mintBtn.disabled = !MINT_LIVE;
+        if (MINT_LIVE) { $("[data-mint-status]").textContent = "Live"; }
+        mintBtn.addEventListener("click", function () {
+          if (!MINT_LIVE) return;
+          /* Mint transaction goes here once CONTRACT_ADDRESS is set. No transaction is sent from this page yet. */
+          toast(CONTRACT_ADDRESS ? "Minting is not wired up yet." : "Contract address not set.");
+        });
+        renderQty();
+
+        /* ---- wallet ---- */
+        var walletBtns = $$("[data-wallet]");
+        function shortAddr(a) { return a.slice(0, 4) + "…" + a.slice(-4); }
+        function setAccount(a) {
+          walletBtns.forEach(function (b) {
+            var lbl = b.querySelector("[data-wallet-label]");
+            lbl.textContent = a ? shortAddr(a) : "Connect Wallet";
+            b.setAttribute("aria-label", a ? "Wallet connected: " + shortAddr(a) : "Connect Wallet");
+            b.classList.toggle("is-connected", !!a);
+            b.title = a || "";
+          });
+          $("[data-wallet-addr]").textContent = a ? shortAddr(a) : "not connected";
+        }
+        function connect() {
+          if (!window.ethereum) { toast("No wallet found. Install MetaMask or a compatible wallet."); return; }
+          window.ethereum.request({ method: "eth_requestAccounts" }).then(function (accs) {
+            if (accs && accs[0]) setAccount(accs[0]);
+          }).catch(function () { toast("Wallet connection was cancelled."); });
+        }
+        walletBtns.forEach(function (b) { b.addEventListener("click", connect); });
+        if (window.ethereum && window.ethereum.on) {
+          window.ethereum.on("accountsChanged", function (accs) { setAccount(accs && accs[0]); });
+        }
+
+        /* ---- sound ---- */
+        var muted = false, ctx = null, muteBtn = $("[data-mute]");
+        function ac() {
+          if (muted) return null;
+          var AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return null;
+          if (!ctx) ctx = new AC();
+          if (ctx.state === "suspended") ctx.resume();
+          return ctx;
+        }
+        function thud() {
+          var c = ac(); if (!c) return;
+          var t = c.currentTime, o = c.createOscillator(), g = c.createGain();
+          o.type = "sine";
+          o.frequency.setValueAtTime(130, t);
+          o.frequency.exponentialRampToValueAtTime(42, t + 0.28);
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.exponentialRampToValueAtTime(0.55, t + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+          o.connect(g).connect(c.destination);
+          o.start(t); o.stop(t + 0.4);
+        }
+        function chime(legendary) {
+          var c = ac(); if (!c) return;
+          var notes = legendary ? [1046.5, 1318.5, 1568, 2093] : [1046.5, 1568];
+          notes.forEach(function (f, i) {
+            var t = c.currentTime + i * 0.09, o = c.createOscillator(), g = c.createGain();
+            o.type = "triangle"; o.frequency.value = f;
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.exponentialRampToValueAtTime(0.1, t + 0.015);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+            o.connect(g).connect(c.destination);
+            o.start(t); o.stop(t + 1);
+          });
+        }
+        muteBtn.addEventListener("click", function () {
+          muted = !muted;
+          muteBtn.textContent = muted ? "Sound off" : "Sound on";
+          muteBtn.setAttribute("aria-pressed", String(muted));
+        });
+
+        /* ---- gacha ---- */
+        var stage = $("[data-stage]"), card = $("[data-card]"), front = $("[data-front]");
+        var result = $("[data-result]"), openBtn = $("[data-open]"), againBtn = $("[data-again]"), shareBtn = $("[data-share]");
+        var tally = { total: 0, Common: 0, Rare: 0, Epic: 0, Legendary: 0 }, history = [], busy = false;
+
+        function pick() {
+          var r = Math.random() * 100, acc = 0, rarity = "Common";
+          for (var i = 0; i < ODDS.length; i++) { acc += ODDS[i][1]; if (r < acc) { rarity = ODDS[i][0]; break; } }
+          var set = POOL.filter(function (c) { return c.rarity === rarity; });
+          return set[Math.floor(Math.random() * set.length)];
+        }
+        function renderTally() {
+          $("[data-t-total]").textContent = tally.total;
+          $$("[data-t]").forEach(function (el) { el.textContent = tally[el.getAttribute("data-t")]; });
+          var slots = $$("[data-thumbs] > div");
+          slots.forEach(function (s, i) {
+            s.textContent = "";
+            s.removeAttribute("title");
+            s.style.borderColor = "";
+            var c = history[i];
+            if (!c) return;
+            var img = cardImg(c.file);
+            img.alt = c.rarity + " " + c.name;
+            s.appendChild(img);
+            s.title = c.rarity + " · " + c.name + " (" + c.skin + ")";
+            s.style.borderColor = "var(--x-" + c.rarity.toLowerCase() + ")";
+          });
+        }
+
+        async function openCrate() {
+          if (busy) return;
+          busy = true;
+          openBtn.hidden = true; againBtn.hidden = true; shareBtn.hidden = true;
+          result.classList.remove("is-shown");
+          if (stage.classList.contains("is-open")) {
+            card.classList.remove("is-flipped");
+            stage.classList.remove("is-open");
+            await wait(420);
+          }
+          var c = pick();
+          card.classList.toggle("is-legendary", c.rarity === "Legendary");
+          front.textContent = "";
+          front.appendChild(cardImg(c.file));
+
+          ac(); /* unlock audio inside the tap */
+          stage.classList.add("is-shaking");
+          await wait(reduced ? 150 : 1200);
+          stage.classList.remove("is-shaking");
+          stage.classList.add("is-flash");
+          thud();
+          stage.classList.add("is-open");
+          await wait(380);
+          stage.classList.remove("is-flash");
+          card.classList.add("is-flipped");
+          await wait(reduced ? 50 : 900);
+
+          var rEl = $("[data-r-rarity]");
+          rEl.textContent = c.rarity;
+          rEl.className = "x-rarity x-r-" + c.rarity.toLowerCase();
+          $("[data-r-name]").textContent = c.name + " · " + c.skin;
+          $("[data-r-meta]").textContent = "#" + c.id + " / 2222";
+          result.classList.add("is-shown");
+          chime(c.rarity === "Legendary");
+
+          var text = "I pulled a " + c.rarity + " " + c.name + " (" + c.skin + ") from the GEARVAULT crate ⚙️ @GearVaultNFT";
+          shareBtn.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(text);
+          againBtn.hidden = false; shareBtn.hidden = false;
+
+          tally.total++; tally[c.rarity]++;
+          history.unshift(c); history = history.slice(0, 8);
+          renderTally();
+          busy = false;
+          againBtn.focus({ preventScroll: true });
+        }
+        openBtn.addEventListener("click", openCrate);
+        againBtn.addEventListener("click", openCrate);
+
+        /* ---- lightbox ---- */
+        var lb = $("[data-lightbox]"), lbImg = $("[data-lb-img]"), lastTile = null;
+        function openLb(tile) {
+          var c = byFile(tile.getAttribute("data-file"));
+          lastTile = tile;
+          lbImg.textContent = "";
+          lbImg.appendChild(cardImg(c.file));
+          var r = $("[data-lb-rarity]");
+          r.textContent = c.rarity; r.className = "x-rarity x-r-" + c.rarity.toLowerCase();
+          $("[data-lb-name]").textContent = c.name + " · " + c.skin;
+          $("[data-lb-meta]").textContent = "#" + c.id + " / 2222";
+          lb.classList.add("is-open");
+          document.body.style.overflow = "hidden";
+          $("[data-lb-close]").focus();
+        }
+        function closeLb() {
+          if (!lb.classList.contains("is-open")) return;
+          lb.classList.remove("is-open");
+          document.body.style.overflow = "";
+          if (lastTile) lastTile.focus({ preventScroll: true });
+        }
+        $$(".x-tile, .x-fan__card").forEach(function (t) { t.addEventListener("click", function () { openLb(t); }); });
+
+        /* home fan: deal again each time Home is shown */
+        var fan = $("[data-fan]"), homeView = $('[data-view="home"]');
+        if (fan && homeView && !reduced && window.MutationObserver) {
+          var wasOn = homeView.classList.contains("is-active");
+          new MutationObserver(function () {
+            var on = homeView.classList.contains("is-active");
+            if (on && !wasOn) { fan.classList.remove("is-dealing"); void fan.offsetWidth; fan.classList.add("is-dealing"); }
+            wasOn = on;
+          }).observe(homeView, { attributes: true, attributeFilter: ["class"] });
+        }
+        lb.addEventListener("click", function (e) { if (e.target === lb || e.target.closest("[data-lb-close]")) closeLb(); });
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeLb(); });
+      })();
+    </script>
+    <script>
+      /* ---- WL checker config ---- */
+      var CHECKER_LIVE = false;
+      var GTD_LIST = [];  /* lowercase addresses */
+      var FCFS_LIST = []; /* lowercase addresses */
+
+      (function () {
+        var form = document.querySelector("[data-check-form]");
+        var input = document.querySelector("[data-check-input]");
+        var msg = document.querySelector("[data-check-msg]");
+        var res = document.querySelector("[data-check-res]");
+        var soon = document.querySelector("[data-check-soon]");
+        var ADDR = /^0x[a-fA-F0-9]{40}$/;
+        if (soon) soon.hidden = CHECKER_LIVE;
+
+        var ICONS = {
+          clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+          check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>',
+          queue: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h9"/></svg>',
+          none: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>'
+        };
+
+        function setMsg(text, info) {
+          msg.textContent = text || "";
+          msg.classList.toggle("is-info", !!info);
+          input.setAttribute("aria-invalid", text && !info ? "true" : "false");
+        }
+        function show(kind, icon, html) {
+          res.hidden = true;
+          res.className = "x-check__res" + (kind ? " is-" + kind : "");
+          res.innerHTML = ICONS[icon] + "<p>" + html + "</p>";
+          void res.offsetWidth; /* restart the fade/slide */
+          res.hidden = false;
+        }
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var addr = input.value.trim();
+          if (!ADDR.test(addr)) {
+            res.hidden = true;
+            setMsg("That doesn't look like a valid wallet address.");
+            return;
+          }
+          setMsg("");
+          if (!CHECKER_LIVE) {
+            show("", "clock", "Checker opens soon. The GTD list is being finalized.");
+            return;
+          }
+          var a = addr.toLowerCase();
+          var inList = function (list) { return list.some(function (x) { return String(x).toLowerCase() === a; }); };
+          if (inList(GTD_LIST)) show("gtd", "check", "<b>GTD ✓</b> — You're guaranteed a mint spot.");
+          else if (inList(FCFS_LIST)) show("fcfs", "queue", "<b>FCFS</b> — You're on the first-come list.");
+          else show("", "none", '<b>Not on the list</b> — Follow <a href="https://x.com/GearVaultNFT" target="_blank" rel="noopener">@GearVaultNFT</a> for the next WL drop.');
+        });
+
+        input.addEventListener("input", function () { if (msg.textContent) setMsg(""); });
+
+        document.querySelector("[data-check-use]").addEventListener("click", function () {
+          var btn = document.querySelector("[data-wallet].is-connected");
+          var addr = btn && btn.title;
+          function fill(a) {
+            input.value = a;
+            setMsg("");
+            input.focus();
+          }
+          if (addr) { fill(addr); return; }
+          if (window.ethereum && window.ethereum.request) {
+            window.ethereum.request({ method: "eth_accounts" }).then(function (accs) {
+              if (accs && accs[0]) fill(accs[0]);
+              else setMsg("No wallet connected yet. Connect one or paste an address.", true);
+            }).catch(function () { setMsg("No wallet connected yet. Connect one or paste an address.", true); });
+          } else {
+            setMsg("No wallet connected yet. Connect one or paste an address.", true);
+          }
+        });
+      })();
+    </script>
+    <script>
+      /* ---- featured drops carousel + active nav ---- */
+      (function () {
+        var track = document.querySelector("[data-track]");
+        var prev = document.querySelector('[data-drops="-1"]'), next = document.querySelector('[data-drops="1"]');
+        function step() {
+          var card = track.querySelector(".x-drop");
+          return card ? card.getBoundingClientRect().width + 18 : 280;
+        }
+        function sync() {}
+        var reducedMo = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var pending = null, settleT = null;
+        function settle() {
+          clearTimeout(settleT);
+          track.removeEventListener("scrollend", settle);
+          if (pending !== null) track.scrollLeft = pending;
+          pending = null;
+          requestAnimationFrame(function () { track.style.scrollSnapType = ""; });
+        }
+        [prev, next].forEach(function (b) {
+          b.addEventListener("click", function () {
+            var dir = Number(b.getAttribute("data-drops"));
+            var max = Math.max(0, track.scrollWidth - track.clientWidth);
+            var base = pending !== null ? pending : track.scrollLeft;
+            var target = base + dir * step();
+            if (dir > 0 && base >= max - 2) target = 0;
+            else if (dir < 0 && base <= 2) target = max;
+            target = Math.max(0, Math.min(max, target));
+            track.style.scrollSnapType = "none";
+            if (reducedMo || typeof track.scrollTo !== "function") {
+              track.style.scrollBehavior = "auto";
+              track.scrollLeft = target;
+              track.style.scrollBehavior = "";
+              pending = null;
+              requestAnimationFrame(function () { track.style.scrollSnapType = ""; });
+              return;
+            }
+            pending = target;
+            track.scrollTo({ left: target, behavior: "smooth" });
+            clearTimeout(settleT);
+            track.removeEventListener("scrollend", settle);
+            track.addEventListener("scrollend", settle);
+            settleT = setTimeout(settle, 900);
+          });
+        });
+        track.addEventListener("scroll", sync, { passive: true });
+        window.addEventListener("resize", sync);
+        sync();
+
+        var links = Array.prototype.slice.call(document.querySelectorAll(".x-bar__nav a"));
+        var navEl = document.querySelector(".x-bar__nav");
+        var dot = document.createElement("span");
+        dot.className = "x-navdot";
+        dot.setAttribute("aria-hidden", "true");
+        navEl.appendChild(dot);
+        navEl.classList.add("has-dot");
+        var activeLink = null;
+        function moveDot() {
+          if (!activeLink) { dot.classList.remove("is-on"); return; }
+          dot.style.transform = "translateX(" + activeLink.offsetLeft + "px)";
+          dot.style.width = activeLink.offsetWidth + "px";
+          dot.classList.add("is-on");
+        }
+        function setActive(id) {
+          activeLink = null;
+          links.forEach(function (a) {
+            var on = a.getAttribute("href") === "#" + id;
+            a.classList.toggle("is-active", on);
+            if (on) { a.setAttribute("aria-current", "true"); activeLink = a; } else a.removeAttribute("aria-current");
+          });
+          moveDot();
+        }
+        /* ---- views: one page at a time, switched by the nav and the hash ---- */
+        var root = document.documentElement;
+        var ALIAS = { top: "home", drops: "home", rarity: "gallery" };
+        var views = {};
+        Array.prototype.slice.call(document.querySelectorAll("[data-view]")).forEach(function (v) {
+          views[v.getAttribute("data-view")] = v;
+          v.addEventListener("animationend", function (e) { if (e.target === v) v.classList.remove("is-entering"); });
+        });
+        var foot = document.querySelector(".x-foot");
+        var bar = document.querySelector(".x-bar");
+        var current = null;
+        function setBarH() { if (bar) root.style.setProperty("--x-bar-h", bar.offsetHeight + "px"); }
+        function nameFrom(h) {
+          h = String(h || "").replace(/^#/, "").toLowerCase();
+          h = ALIAS[h] || h;
+          return views[h] ? h : null;
+        }
+        function readHash() { try { return window.location.hash; } catch (e) { return ""; } }
+        function toTop() {
+          try { window.scrollTo({ top: 0, left: 0, behavior: "instant" }); }
+          catch (e) { try { window.scrollTo(0, 0); } catch (e2) {} }
+        }
+        function revealNav() {
+          if (!activeLink || navEl.scrollWidth <= navEl.clientWidth) return;
+          var l = activeLink.offsetLeft - (navEl.clientWidth - activeLink.offsetWidth) / 2;
+          try { navEl.scrollTo({ left: l, behavior: reducedMo ? "auto" : "smooth" }); } catch (e) { navEl.scrollLeft = l; }
+        }
+        function show(name, animate) {
+          if (!views[name]) name = "home";
+          if (name === current) { toTop(); return; }
+          Object.keys(views).forEach(function (k) {
+            if (k !== name) views[k].classList.remove("is-active", "is-entering");
+          });
+          var v = views[name];
+          v.classList.add("is-active");
+          if (foot) v.appendChild(foot);
+          if (animate && !reducedMo) {
+            v.classList.remove("is-entering");
+            void v.offsetWidth;
+            v.classList.add("is-entering");
+          }
+          current = name;
+          setActive(name);
+          revealNav();
+          toTop();
+        }
+        function go(name) {
+          name = nameFrom(name) || "home";
+          if (readHash() !== "#" + name) {
+            try { window.history.pushState({ view: name }, "", "#" + name); }
+            catch (e) { try { window.location.hash = name; } catch (e2) { /* in-memory only */ } }
+          }
+          show(name, true);
+        }
+        function fromHash() { show(nameFrom(readHash()) || "home", true); }
+        try { window.addEventListener("popstate", fromHash); window.addEventListener("hashchange", fromHash); } catch (e) {}
+
+        /* every in-page link to a view switches to it */
+        document.addEventListener("click", function (e) {
+          if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          var a = e.target.closest && e.target.closest('a[href^="#"]');
+          if (!a) return;
+          var name = nameFrom(a.getAttribute("href"));
+          if (!name) return;
+          e.preventDefault();
+          go(name);
+        });
+
+        setBarH();
+        if (bar && window.ResizeObserver) new ResizeObserver(setBarH).observe(bar);
+        window.addEventListener("resize", function () { setBarH(); moveDot(); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setBarH(); moveDot(); revealNav(); });
+        show(nameFrom(readHash()) || "home", false);
+      })();
+    </script>
+    <script>
+      /* ---- scroll reveal + hero count-up ---- */
+      (function () {
+        var root = document.documentElement;
+        var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        document.addEventListener("touchstart", function () {}, { passive: true }); /* lets :active press show on iOS */
+
+        /* count-up: the final text is always restored */
+        var dds = Array.prototype.slice.call(document.querySelectorAll(".x-stats dd"));
+        var finals = dds.map(function (d) { return d.textContent; });
+        function finish() { dds.forEach(function (d, i) { d.textContent = finals[i]; }); }
+        /* intro splash: count-up and hero entrance wait for "Go to Home" */
+        var splash = document.getElementById("x-splash");
+        var site = document.querySelector(".x-site");
+        var whenGo = [];
+        function onGo(fn) { if (splash && root.classList.contains("x-splashing")) whenGo.push(fn); else fn(); }
+        if (splash && root.classList.contains("x-splashing")) {
+          if (site) site.setAttribute("inert", "");
+          var go = splash.querySelector("[data-splash-go]");
+          if (go) { try { go.focus({ preventScroll: true }); } catch (e) {} }
+          var done = false;
+          function removeSplash() {
+            if (splash.parentNode) splash.parentNode.removeChild(splash);
+          }
+          var load = splash.querySelector("[data-splash-load]");
+          var fill = splash.querySelector("[data-splash-fill]");
+          var bomb = splash.querySelector("[data-splash-bomb]");
+          var ball = splash.querySelector("[data-splash-ball]");
+          var pop = splash.querySelector("[data-splash-pop]");
+          var pct = splash.querySelector("[data-splash-pct]");
+          /* loading curve: eased runs with two short holds near 35% and 78%; [ms, progress at end] */
+          var LOAD_SEGS = [[1600, 0.35], [300, 0.355], [1800, 0.78], [300, 0.785], [1000, 1]];
+          var LOAD_MS = LOAD_SEGS.reduce(function (s, g) { return s + g[0]; }, 0);
+          function inOut(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+          function ease(t) {
+            var ms = t * LOAD_MS, from = 0;
+            for (var i = 0; i < LOAD_SEGS.length; i++) {
+              var g = LOAD_SEGS[i];
+              if (ms <= g[0] || i === LOAD_SEGS.length - 1) return from + (g[1] - from) * inOut(Math.min(1, ms / g[0]));
+              ms -= g[0]; from = g[1];
+            }
+            return 1;
+          }
+          function setProgress(p, w) {
+            if (fill) fill.style.transform = "scaleX(" + p + ")";
+            if (pct) pct.textContent = Math.round(p * 100) + "%";
+            if (bomb && w) {
+              var x = p * w;
+              bomb.style.transform = "translateX(" + x + "px)";
+              if (ball) ball.style.transform = "rotate(" + (x / (Math.PI * 22)) * 360 + "deg)";
+            }
+          }
+          go.addEventListener("click", function () {
+            if (done) return;
+            done = true;
+            splash.classList.add("is-loading");
+            if (load) { load.setAttribute("tabindex", "-1"); try { load.focus({ preventScroll: true }); } catch (e) {} }
+            var line = load ? load.querySelector(".x-splash__line") : null;
+            var w = line ? line.getBoundingClientRect().width : 0;
+            var dur = reduced ? 400 : LOAD_MS, t0 = null;
+            function step(now) {
+              if (t0 === null) t0 = now;
+              var t = Math.min(1, (now - t0) / dur);
+              setProgress(reduced ? t : ease(t), reduced ? 0 : w);
+              if (t < 1) { requestAnimationFrame(step); return; }
+              if (reduced) { reveal(); return; }
+              if (bomb) bomb.classList.add("is-gone");
+              if (pop) pop.classList.add("is-on");
+              setTimeout(reveal, 300);
+            }
+            if (window.requestAnimationFrame) requestAnimationFrame(step); else reveal();
+          });
+          function reveal() {
+            window.scrollTo(0, 0);
+            root.classList.remove("x-splashing");
+            if (site) site.removeAttribute("inert");
+            whenGo.splice(0).forEach(function (fn) { fn(); });
+            if (reduced) { removeSplash(); return; }
+            splash.classList.add("is-leaving");
+            var removed = false;
+            function fin() { if (!removed) { removed = true; removeSplash(); } }
+            splash.addEventListener("animationend", function (e) { if (e.target === splash && e.animationName === "x-splash-out") fin(); });
+            setTimeout(fin, 900);
+          }
+        } else if (splash) {
+          splash.parentNode.removeChild(splash);
+        }
+
+        if (!reduced && window.requestAnimationFrame) {
+          dds.forEach(function (d, i) {
+            var target = parseInt(finals[i].replace(/[^0-9]/g, ""), 10);
+            if (!target) return;
+            d.style.minWidth = d.offsetWidth + "px";
+            d.textContent = "0";
+            var delay = 350 + i * 120, dur = 1300, start = null;
+            onGo(function () { setTimeout(function () {
+              requestAnimationFrame(function tick(t) {
+                if (start === null) start = t;
+                var p = Math.min(1, (t - start) / dur), e = 1 - Math.pow(1 - p, 3);
+                d.textContent = p < 1 ? Math.round(target * e).toLocaleString("en-US") : finals[i];
+                if (p < 1) requestAnimationFrame(tick);
+              });
+            }, delay); });
+          });
+          onGo(function () { setTimeout(finish, 2600); });
+        }
+
+        /* reveal */
+        if (!("IntersectionObserver" in window)) return;
+        var sel = [
+          ".x-sec .x-head", ".x-mint", ".x-check", ".x-drops__side", ".x-gamebox", ".x-tally", ".x-tile",
+          ".x-rare-grid .table-wrap", ".x-rare-grid > div:last-child", ".x-strip", ".x-foot__in"
+        ].join(",");
+        var items = Array.prototype.slice.call(document.querySelectorAll(sel));
+        items.forEach(function (el) { el.classList.add("x-rv"); });
+        var track = document.querySelector("[data-track]");
+        if (track) { track.classList.add("x-rv-kids"); items.push(track); }
+        var tiles = Array.prototype.slice.call(document.querySelectorAll(".x-tile"));
+        tiles.forEach(function (t, i) { t.style.setProperty("--x-d", (i % 4) * 0.07 + "s"); });
+
+        var vh = window.innerHeight || root.clientHeight;
+        var pending = items.filter(function (el) {
+          var r = el.getBoundingClientRect();
+          if (r.top < vh && r.bottom > 0) { el.classList.add("is-in"); return false; }
+          if (r.bottom <= 0) { el.classList.add("is-in"); return false; }
+          return true;
+        });
+        root.classList.add("js");
+        if (reduced) { items.forEach(function (el) { el.classList.add("is-in"); }); return; }
+
+        var fired = !pending.length;
+        var io = new IntersectionObserver(function (entries) {
+          fired = true;
+          entries.forEach(function (en) {
+            if (en.isIntersecting || en.boundingClientRect.bottom <= 0) {
+              en.target.classList.add("is-in");
+              io.unobserve(en.target);
+            }
+          });
+        }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+        pending.forEach(function (el) { io.observe(el); });
+        /* safety net: if the observer never reports, show everything */
+        setTimeout(function () { if (!fired) items.forEach(function (el) { el.classList.add("is-in"); }); }, 2500);
+      })();
+    </script>
+  </body>
+</html>
