@@ -330,6 +330,60 @@
       .x-check__res a { color: var(--text-primary); text-underline-offset: 3px; }
       .x-check__res.is-gtd { color: var(--x-lime); border-color: color-mix(in srgb, var(--x-lime) 35%, #222); }
       .x-check__res.is-fcfs { color: #4da3ff; border-color: color-mix(in srgb, #4da3ff 35%, #222); }
+      /* whitelist view: tasks, proof form, status */
+      .x-wl { display: grid; gap: 36px; }
+      .x-wl > * { width: 100%; max-width: 600px; margin-inline: auto; }
+      .x-wl__head { display: grid; gap: 6px; }
+      .x-wl__head h2 { font: 600 clamp(24px, 5vw, 32px)/1.1 var(--sans); letter-spacing: 0.02em; color: var(--text-primary); }
+      .x-wl__head p { font: var(--type-body); color: var(--text-secondary); }
+      .x-wl__block { display: grid; gap: 12px; }
+      .x-wl__h { font: var(--type-tag); letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-secondary); }
+      .x-wl__hrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .x-wl__sub { font: var(--type-small); color: var(--text-secondary); margin-top: -4px; }
+      .x-wl__tasks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+      .x-wl__task {
+        display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px 12px;
+        background: #141416; border: 1px solid #222; border-radius: var(--r-m); padding: 12px 12px 12px 16px;
+      }
+      .x-wl__num { font: 400 12px/1 "Geist Mono", ui-monospace, monospace; color: var(--text-secondary); }
+      .x-wl__label { font: var(--type-label); color: var(--text-primary); min-width: 0; }
+      .x-wl__tick {
+        display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+        border: 1px solid #333; color: #444; transition: color var(--dur-quick) var(--ease-out), border-color var(--dur-quick) var(--ease-out);
+      }
+      .x-wl__tick svg { width: 14px; height: 14px; }
+      .x-wl__task.is-done .x-wl__tick { color: var(--x-lime); border-color: color-mix(in srgb, var(--x-lime) 55%, #222); }
+      .x-wl__go { grid-column: 2 / -1; justify-self: start; }
+      @media (min-width: 560px) {
+        .x-wl__task { grid-template-columns: auto 1fr auto auto; }
+        .x-wl__go { grid-column: auto; grid-row: 1; grid-column-start: 3; }
+        .x-wl__tick { grid-row: 1; grid-column-start: 4; }
+      }
+      .x-wl__link {
+        justify-self: start; display: inline-flex; align-items: center; min-height: var(--tap);
+        font: var(--type-small); letter-spacing: 0.04em; color: var(--text-secondary);
+        text-decoration: underline; text-underline-offset: 3px; text-decoration-color: #444;
+      }
+      .x-wl__link:hover { color: var(--text-primary); }
+      .x-wl__form { display: grid; gap: 14px; background: #141416; border: 1px solid #222; border-radius: var(--r-l); padding: clamp(16px, 4vw, 28px); }
+      .x-wl__form[hidden] { display: none; }
+      .x-wl__field { display: grid; gap: 6px; }
+      .x-wl__field label { font: var(--type-small); color: var(--text-secondary); }
+      .x-wl__field .x-check__input { width: 100%; box-sizing: border-box; font-size: 16px; }
+      .x-wl__err { font: var(--type-caption); color: #ff6b6b; }
+      .x-wl__err:empty { display: none; }
+      .x-wl__submit { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; padding-top: 4px; }
+      .x-wl__hint { font: var(--type-caption); color: var(--text-secondary); }
+      .x-wl__hint:empty { display: none; }
+      .x-wl__done {
+        display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: var(--r-m);
+        background: #141416; border: 1px solid color-mix(in srgb, var(--x-lime) 35%, #222);
+        font: var(--type-small); color: var(--text-secondary);
+      }
+      .x-wl__done[hidden] { display: none; }
+      .x-wl__done svg { flex: none; width: 20px; height: 20px; color: var(--x-lime); }
+      .x-wl__done-lead { font: var(--type-body); color: var(--x-lime); margin-bottom: 2px; }
+      .x-wl .x-check { margin: 0; max-width: none; }
       @keyframes x-check-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
       @media (prefers-reduced-motion: reduce) { .x-check__res { animation: none; } }
 
@@ -788,7 +842,7 @@
         <div class="x-wrap x-bar__in">
           <a class="x-bar__logo" href="#home" aria-label="GEARVAULT home"><img src="logo_white.png" alt="GEARVAULT" /></a>
           <nav class="x-bar__nav" aria-label="Pages">
-            <a href="#home" aria-label="Home"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1.2 1 7.4h2v7.1h3.6V10h2.8v4.5H13V7.4h2z"/></svg></span><span class="x-tab__lbl">Home</span></a><a href="#mint" aria-label="Mint"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 .8l6.3 3.6v7.2L8 15.2 1.7 11.6V4.4z"/></svg></span><span class="x-tab__lbl">Mint</span></a><a href="#crate" aria-label="Crate"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1 1.8 4.2 8 7.4l6.2-3.2zM1.2 5.3v6.5L7.4 15V8.5zm13.6 0L8.6 8.5V15l6.2-3.2z"/></svg></span><span class="x-tab__lbl">Crate</span></a><a href="#checker" aria-label="Checker"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 .8 2 3v4.6c0 3.6 2.6 6.6 6 7.6 3.4-1 6-4 6-7.6V3zm3.1 5.1-1-1-3 3-1.3-1.3-1 1 2.3 2.3z"/></svg></span><span class="x-tab__lbl">Checker</span></a><a href="#gallery" aria-label="Gallery"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2"/></svg></span><span class="x-tab__lbl">Gallery</span></a>
+            <a href="#home" aria-label="Home"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1.2 1 7.4h2v7.1h3.6V10h2.8v4.5H13V7.4h2z"/></svg></span><span class="x-tab__lbl">Home</span></a><a href="#mint" aria-label="Mint"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 .8l6.3 3.6v7.2L8 15.2 1.7 11.6V4.4z"/></svg></span><span class="x-tab__lbl">Mint</span></a><a href="#crate" aria-label="Crate"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M8 1 1.8 4.2 8 7.4l6.2-3.2zM1.2 5.3v6.5L7.4 15V8.5zm13.6 0L8.6 8.5V15l6.2-3.2z"/></svg></span><span class="x-tab__lbl">Crate</span></a><a href="#whitelist" aria-label="Whitelist"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 .8 2 3v4.6c0 3.6 2.6 6.6 6 7.6 3.4-1 6-4 6-7.6V3zm3.1 5.1-1-1-3 3-1.3-1.3-1 1 2.3 2.3z"/></svg></span><span class="x-tab__lbl">Whitelist</span></a><a href="#gallery" aria-label="Gallery"><span class="x-tab__ic" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2"/></svg></span><span class="x-tab__lbl">Gallery</span></a>
           </nav>
           <div class="x-bar__right">
             <button class="x-cap x-cap--sm" type="button" data-wallet><span class="x-cap__title" data-wallet-label>Connect Wallet</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3" /><rect x="4" y="8" width="16" height="11" rx="2.5" /><path d="M16 13.5h.01" /></svg></span></button>
@@ -1131,15 +1185,78 @@
         </div>
         </div>
 
-        <div class="x-view" data-view="checker" aria-label="Checker">
+        <div class="x-view" data-view="whitelist" aria-label="Whitelist">
         <div class="x-view__body">
         <section class="x-sec">
-          <div class="x-wrap">
-            <div class="x-head x-head--center">
-              <p class="x-eyebrow">Whitelist</p>
-              <div class="x-check__title"><h2>Wallet Checker</h2><span class="x-soon" data-check-soon>Soon</span></div>
-              <p class="x-sub">Check if your wallet is GTD for the GEARVAULT mint.</p>
+          <div class="x-wrap x-wl">
+            <div class="x-wl__head">
+              <h2>Whitelist</h2>
+              <p>Complete the tasks, submit your proof, then check your status here.</p>
             </div>
+
+            <div class="x-wl__block">
+              <h3 class="x-wl__h">Tasks</h3>
+              <ol class="x-wl__tasks">
+                <li class="x-wl__task" data-task="follow">
+                  <span class="x-wl__num">01</span>
+                  <span class="x-wl__label">Follow @GearVaultNFT</span>
+                  <span class="x-wl__tick" aria-label="Not done yet" role="img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12.5l4 4L18 8"/></svg></span>
+                  <a class="x-cap x-cap--sm x-wl__go" href="https://x.com/GearVaultNFT" target="_blank" rel="noopener" data-task-link="follow"><span class="x-cap__title">Follow</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></a>
+                </li>
+                <li class="x-wl__task" data-task="repost">
+                  <span class="x-wl__num">02</span>
+                  <span class="x-wl__label">Repost the pinned post</span>
+                  <span class="x-wl__tick" aria-label="Not done yet" role="img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12.5l4 4L18 8"/></svg></span>
+                  <a class="x-cap x-cap--sm x-wl__go" href="https://x.com/GearVaultNFT" target="_blank" rel="noopener" data-task-link="repost"><span class="x-cap__title">Repost</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></a>
+                </li>
+                <li class="x-wl__task" data-task="comment">
+                  <span class="x-wl__num">03</span>
+                  <span class="x-wl__label">Comment on the pinned post</span>
+                  <span class="x-wl__tick" aria-label="Not done yet" role="img"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 12.5l4 4L18 8"/></svg></span>
+                  <a class="x-cap x-cap--sm x-wl__go" href="https://x.com/GearVaultNFT" target="_blank" rel="noopener" data-task-link="comment"><span class="x-cap__title">Comment</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></a>
+                </li>
+              </ol>
+              <a class="x-wl__link" href="https://x.com/GearVaultNFT" target="_blank" rel="noopener" data-pinned-link>View pinned post</a>
+            </div>
+
+            <div class="x-wl__block">
+              <h3 class="x-wl__h">Submit proof</h3>
+              <form class="x-wl__form" data-wl-form novalidate>
+                <div class="x-wl__field">
+                  <label for="x-wl-handle">X handle</label>
+                  <input class="x-check__input" id="x-wl-handle" name="handle" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="@yourhandle" aria-describedby="x-wl-handle-err" required data-wl-field="handle" />
+                  <p class="x-wl__err" id="x-wl-handle-err" data-wl-err="handle"></p>
+                </div>
+                <div class="x-wl__field">
+                  <label for="x-wl-wallet">EVM wallet</label>
+                  <input class="x-check__input" id="x-wl-wallet" name="wallet" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="0x..." aria-describedby="x-wl-wallet-err" required data-wl-field="wallet" />
+                  <p class="x-wl__err" id="x-wl-wallet-err" data-wl-err="wallet"></p>
+                </div>
+                <div class="x-wl__field">
+                  <label for="x-wl-repost">Repost link</label>
+                  <input class="x-check__input" id="x-wl-repost" name="repost" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://x.com/.../status/..." aria-describedby="x-wl-repost-err" required data-wl-field="repost" />
+                  <p class="x-wl__err" id="x-wl-repost-err" data-wl-err="repost"></p>
+                </div>
+                <div class="x-wl__field">
+                  <label for="x-wl-comment">Comment link</label>
+                  <input class="x-check__input" id="x-wl-comment" name="comment" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://x.com/.../status/..." aria-describedby="x-wl-comment-err" required data-wl-field="comment" />
+                  <p class="x-wl__err" id="x-wl-comment-err" data-wl-err="comment"></p>
+                </div>
+                <div class="x-wl__submit">
+                  <button class="x-cap" type="submit" disabled data-wl-submit><span class="x-cap__title">Submit</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 6l6 6-6 6" /></svg></span></button>
+                  <p class="x-wl__hint" data-wl-hint>Click all three task buttons to unlock.</p>
+                </div>
+                <p class="x-wl__err x-wl__err--form" role="alert" data-wl-formerr></p>
+              </form>
+              <div class="x-wl__done" data-wl-done role="status" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+                <div><p class="x-wl__done-lead">Submitted. Your entry is under review.</p><p>Check your wallet below once the list is live.</p></div>
+              </div>
+            </div>
+
+            <div class="x-wl__block">
+              <div class="x-wl__hrow"><h3 class="x-wl__h">Check status</h3><span class="x-soon" data-check-soon>Soon</span></div>
+              <p class="x-wl__sub">Check if your wallet is GTD for the GEARVAULT mint.</p>
             <div class="x-check">
               <form class="x-check__form" data-check-form novalidate>
                 <div class="x-check__row">
@@ -1152,6 +1269,7 @@
                 </div>
               </form>
               <div class="x-check__res" data-check-res aria-live="polite" hidden></div>
+            </div>
             </div>
           </div>
         </section>
@@ -1518,6 +1636,127 @@
       })();
     </script>
     <script>
+      /* ---- whitelist tasks + proof form ---- */
+      var PINNED_ID = "2121623993476071558";
+      var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScFq54cmc4CVSs1SLOIqIbd3_JOKeZuW8QjLJ0_OpTPRAqJsw/formResponse";
+      var FORM_FIELDS = {
+        handle: "entry.921328596",
+        wallet: "entry.1018924333",
+        repost: "entry.1585030491",
+        comment: "entry.878706358"
+      };
+
+      (function () {
+        var TASK_URLS = {
+          follow: "https://x.com/intent/follow?screen_name=GearVaultNFT",
+          repost: "https://x.com/intent/retweet?tweet_id=" + PINNED_ID,
+          comment: "https://x.com/intent/tweet?in_reply_to=" + PINNED_ID
+        };
+        var PINNED_URL = "https://x.com/GearVaultNFT/status/" + PINNED_ID;
+        var STATUS_URL = /^https?:\/\/(www\.|mobile\.)?(x|twitter)\.com\/[A-Za-z0-9_]{1,15}\/status\/\d+\/?([?#].*)?$/;
+        var WALLET = /^0x[0-9a-fA-F]{40}$/;
+        var HANDLE = /^[A-Za-z0-9_]{1,15}$/;
+        var clicked = {};
+
+        var form = document.querySelector("[data-wl-form]");
+        if (!form) return;
+        var submit = form.querySelector("[data-wl-submit]");
+        var hint = form.querySelector("[data-wl-hint]");
+        var formErr = form.querySelector("[data-wl-formerr]");
+        var done = document.querySelector("[data-wl-done]");
+        var pinned = document.querySelector("[data-pinned-link]");
+        if (pinned) pinned.href = PINNED_URL;
+
+        Array.prototype.slice.call(document.querySelectorAll("[data-task-link]")).forEach(function (a) {
+          var key = a.getAttribute("data-task-link");
+          a.href = TASK_URLS[key];
+          a.addEventListener("click", function () {
+            clicked[key] = true;
+            var row = a.closest("[data-task]");
+            if (row) {
+              row.classList.add("is-done");
+              var t = row.querySelector(".x-wl__tick");
+              if (t) t.setAttribute("aria-label", "Done");
+            }
+            update();
+          });
+        });
+
+        function handleValue(v) {
+          var s = String(v || "").replace(/\s+/g, "");
+          if (s.charAt(0) === "@") s = s.slice(1);
+          return HANDLE.test(s) ? "@" + s : null;
+        }
+        var CHECKS = {
+          handle: function (v) {
+            if (!v.replace(/\s+/g, "")) return "Enter your X handle.";
+            return handleValue(v) ? "" : "Use 1–15 letters, numbers or underscores.";
+          },
+          wallet: function (v) {
+            if (!v.trim()) return "Enter your wallet address.";
+            return WALLET.test(v.trim()) ? "" : "Enter a 0x address with 40 hex characters.";
+          },
+          repost: function (v) {
+            if (!v.trim()) return "Paste the link to your repost.";
+            return STATUS_URL.test(v.trim()) ? "" : "Use an x.com or twitter.com status link.";
+          },
+          comment: function (v) {
+            if (!v.trim()) return "Paste the link to your comment.";
+            return STATUS_URL.test(v.trim()) ? "" : "Use an x.com or twitter.com status link.";
+          }
+        };
+        var fields = {}, touched = {};
+        Object.keys(CHECKS).forEach(function (k) {
+          var input = form.querySelector('[data-wl-field="' + k + '"]');
+          fields[k] = input;
+          input.addEventListener("input", function () { if (touched[k]) paint(k); update(); });
+          input.addEventListener("blur", function () { if (input.value) touched[k] = true; paint(k); update(); });
+        });
+        function paint(k) {
+          var msg = touched[k] ? CHECKS[k](fields[k].value) : "";
+          form.querySelector('[data-wl-err="' + k + '"]').textContent = msg;
+          fields[k].setAttribute("aria-invalid", msg ? "true" : "false");
+        }
+        function allValid() {
+          return Object.keys(CHECKS).every(function (k) { return !CHECKS[k](fields[k].value); });
+        }
+        function tasksDone() { return clicked.follow && clicked.repost && clicked.comment; }
+        function update() {
+          var ok = tasksDone() && allValid();
+          submit.disabled = !ok;
+          hint.textContent = !tasksDone() ? "Click all three task buttons to unlock." : (!allValid() ? "Fill in all four fields." : "");
+        }
+
+        var sending = false;
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          if (sending) return;
+          Object.keys(CHECKS).forEach(function (k) { touched[k] = true; paint(k); });
+          update();
+          if (submit.disabled) return;
+          formErr.textContent = "";
+          var body = new URLSearchParams();
+          body.append(FORM_FIELDS.handle, handleValue(fields.handle.value));
+          body.append(FORM_FIELDS.wallet, fields.wallet.value.trim());
+          body.append(FORM_FIELDS.repost, fields.repost.value.trim());
+          body.append(FORM_FIELDS.comment, fields.comment.value.trim());
+          sending = true;
+          submit.disabled = true;
+          submit.querySelector(".x-cap__title").textContent = "Submitting…";
+          fetch(FORM_URL, { method: "POST", mode: "no-cors", body: body }).then(function () {
+            form.hidden = true;
+            done.hidden = false;
+          }).catch(function () {
+            formErr.textContent = "Couldn't submit. Try again.";
+            sending = false;
+            submit.querySelector(".x-cap__title").textContent = "Submit";
+            update();
+          });
+        });
+        update();
+      })();
+    </script>
+    <script>
       /* ---- featured drops carousel + active nav ---- */
       (function () {
         var track = document.querySelector("[data-track]");
@@ -1591,7 +1830,7 @@
         }
         /* ---- views: one page at a time, switched by the nav and the hash ---- */
         var root = document.documentElement;
-        var ALIAS = { top: "home", drops: "home", rarity: "gallery" };
+        var ALIAS = { top: "home", drops: "home", rarity: "gallery", checker: "whitelist" };
         var views = {};
         Array.prototype.slice.call(document.querySelectorAll("[data-view]")).forEach(function (v) {
           views[v.getAttribute("data-view")] = v;
