@@ -1587,7 +1587,7 @@
           } else fallback();
         });
 
-        function pick() {
+        function pickWallet() {
           if (announced.length > 1) { showPicker(announced.slice()); return true; }
           if (announced.length === 1) { requestWith(announced[0].provider); return true; }
           if (window.ethereum) { requestWith(window.ethereum); return true; }
@@ -1595,8 +1595,8 @@
         }
         function connect() {
           requestProviders();
-          if (pick()) return;
-          setTimeout(function () { if (!pick()) showOpenIn(); }, 150);
+          if (pickWallet()) return;
+          setTimeout(function () { if (!pickWallet()) showOpenIn(); }, 150);
         }
         walletBtns.forEach(function (b) { b.addEventListener("click", connect); });
 
