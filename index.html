@@ -550,6 +550,50 @@
       .x-lightbox figcaption { text-align: center; display: grid; gap: 4px; }
       .x-lightbox__close { position: absolute; top: 12px; right: 12px; }
 
+      /* wallet sheet: picker + open-in-wallet */
+      .x-ws {
+        position: fixed; inset: 0; z-index: 65; display: none; align-items: flex-end; justify-content: center;
+        background: rgb(0 0 0 / 0.6);
+      }
+      .x-ws.is-open { display: flex; }
+      .x-ws__panel {
+        position: relative; width: 100%; max-width: 420px; box-sizing: border-box;
+        padding: 20px 16px calc(env(safe-area-inset-bottom, 0px) + 18px);
+        background: var(--x-panel); border: 1px solid var(--x-line); border-bottom: 0;
+        border-radius: var(--r-l) var(--r-l) 0 0; color: var(--text-primary);
+      }
+      @media (min-width: 640px) {
+        .x-ws { align-items: center; padding: 24px; }
+        .x-ws__panel { border-bottom: 1px solid var(--x-line); border-radius: var(--r-l); padding-bottom: 18px; }
+      }
+      .x-ws__x {
+        position: absolute; top: 8px; right: 8px; width: var(--tap); height: var(--tap);
+        display: grid; place-items: center; padding: 0; border: 0; background: none; color: var(--text-secondary); cursor: pointer; border-radius: var(--r-pill);
+      }
+      .x-ws__x:hover { color: var(--text-primary); }
+      .x-ws__x svg { width: 18px; height: 18px; }
+      .x-ws__title { margin: 0 48px 4px 4px; font: var(--type-label); font-weight: var(--weight-medium); letter-spacing: 0.04em; }
+      .x-ws__sub { margin: 0 4px 14px; font: var(--type-small); color: var(--text-secondary); }
+      .x-ws__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+      .x-ws__row {
+        display: flex; align-items: center; gap: 10px; width: 100%; min-height: var(--tap); box-sizing: border-box;
+        padding: 6px 14px; border: 1px solid var(--x-line); border-radius: var(--r-pill);
+        background: var(--x-panel-2); color: var(--text-primary); font: var(--type-small); letter-spacing: 0.04em;
+        text-decoration: none; text-align: left; cursor: pointer;
+      }
+      .x-ws__row:hover { border-color: var(--x-lime); }
+      .x-ws__row:focus-visible { outline: 2px solid var(--x-lime); outline-offset: 2px; }
+      .x-ws__row img { width: 22px; height: 22px; border-radius: 6px; flex: none; }
+      .x-ws__row span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .x-ws__row svg { width: 16px; height: 16px; flex: none; color: var(--x-lime); }
+      .x-ws__foot { margin: 14px 4px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 2px 10px; }
+      .x-ws__copy {
+        min-height: var(--tap); padding: 0; border: 0; background: none; cursor: pointer;
+        font: var(--type-small); letter-spacing: 0.04em; color: var(--x-lime); text-decoration: underline; text-underline-offset: 3px;
+      }
+      .x-ws__hint { font: var(--type-caption); color: var(--text-secondary); }
+      .x-ws__hidden { position: absolute; left: -9999px; opacity: 0; }
+
       /* rarity */
       .x-rare-grid { display: grid; gap: 28px; }
       .x-types { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -1296,10 +1340,25 @@
         <figcaption><span class="x-rarity" data-lb-rarity></span><span class="x-result__name" data-lb-name></span><span class="x-result__meta" data-lb-meta></span></figcaption>
       </figure>
     </div>
+    <div class="x-ws" data-ws role="dialog" aria-modal="true" aria-labelledby="x-ws-title">
+      <div class="x-ws__panel">
+        <button class="x-ws__x" type="button" data-ws-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+        <p class="x-ws__title" id="x-ws-title" data-ws-title>Open in your wallet</p>
+        <p class="x-ws__sub" data-ws-sub></p>
+        <ul class="x-ws__list" data-ws-list></ul>
+        <div class="x-ws__foot" data-ws-foot>
+          <button class="x-ws__copy" type="button" data-ws-copy>Copy link</button>
+          <span class="x-ws__hint">Or paste it into your wallet's browser.</span>
+          <input class="x-ws__hidden" type="text" readonly tabindex="-1" aria-hidden="true" data-ws-input />
+        </div>
+      </div>
+    </div>
     <div class="x-toast" data-toast role="status" aria-live="polite"></div>
 
     <script src="hark.js"></script>
 <script>
+      /* ---- active wallet provider (shared across scripts) ---- */
+      var activeProvider = null;
       /* ---- Mint config: wire these up when the contract is live ---- */
       var CONTRACT_ADDRESS = "";
       var MINT_PRICE = "TBA";
@@ -1391,16 +1450,155 @@
           });
           $("[data-wallet-addr]").textContent = a ? shortAddr(a) : "not connected";
         }
-        function connect() {
-          if (!window.ethereum) { toast("No wallet found. Install MetaMask or a compatible wallet."); return; }
-          window.ethereum.request({ method: "eth_requestAccounts" }).then(function (accs) {
+        /* EIP-6963 discovery */
+        var announced = [];
+        window.addEventListener("eip6963:announceProvider", function (e) {
+          var d = e.detail;
+          if (!d || !d.provider || !d.info) return;
+          var key = d.info.uuid || d.info.rdns || d.info.name;
+          for (var i = 0; i < announced.length; i++) {
+            var k = announced[i].info.uuid || announced[i].info.rdns || announced[i].info.name;
+            if (k === key) return;
+          }
+          announced.push(d);
+        });
+        function requestProviders() {
+          try { window.dispatchEvent(new Event("eip6963:requestProvider")); } catch (err) {}
+        }
+        requestProviders();
+
+        var bound = [];
+        function bindProvider(p) {
+          if (!p || !p.on || bound.indexOf(p) !== -1) return;
+          bound.push(p);
+          p.on("accountsChanged", function (accs) {
+            if ((activeProvider || window.ethereum) === p) setAccount(accs && accs[0]);
+          });
+        }
+        bindProvider(window.ethereum);
+
+        function isCancel(err) {
+          if (!err) return false;
+          var c = err.code;
+          if (c === undefined && err.data && err.data.originalError) c = err.data.originalError.code;
+          return c === 4001 || c === "ACTION_REJECTED";
+        }
+        function requestWith(p) {
+          activeProvider = p;
+          bindProvider(p);
+          p.request({ method: "eth_requestAccounts" }).then(function (accs) {
             if (accs && accs[0]) setAccount(accs[0]);
-          }).catch(function () { toast("Wallet connection was cancelled."); });
+          }).catch(function (err) {
+            toast(isCancel(err) ? "Connection cancelled." : "Couldn't connect. Try again in your wallet app.");
+          });
+        }
+
+        /* wallet sheet */
+        var ws = $("[data-ws]"), wsTitle = $("[data-ws-title]"), wsSub = $("[data-ws-sub]"),
+            wsList = $("[data-ws-list]"), wsFoot = $("[data-ws-foot]"), wsCopy = $("[data-ws-copy]"),
+            wsInput = $("[data-ws-input]"), wsReturn = null, copyT;
+        var ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>';
+        function openSheet() {
+          wsReturn = document.activeElement;
+          ws.classList.add("is-open");
+          $("[data-ws-close]").focus();
+        }
+        function closeSheet() {
+          if (!ws.classList.contains("is-open")) return;
+          ws.classList.remove("is-open");
+          if (wsReturn && wsReturn.focus) wsReturn.focus();
+        }
+        $("[data-ws-close]").addEventListener("click", closeSheet);
+        ws.addEventListener("click", function (e) { if (e.target === ws) closeSheet(); });
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeSheet(); });
+
+        function showPicker(list) {
+          wsTitle.textContent = "Choose a wallet";
+          wsSub.textContent = "Pick the wallet to connect with.";
+          wsFoot.style.display = "none";
+          wsList.innerHTML = "";
+          list.forEach(function (d) {
+            var li = document.createElement("li");
+            var b = document.createElement("button");
+            b.type = "button"; b.className = "x-ws__row";
+            if (d.info.icon) {
+              var img = document.createElement("img");
+              img.src = d.info.icon; img.alt = "";
+              b.appendChild(img);
+            }
+            var s = document.createElement("span"); s.textContent = d.info.name || "Wallet";
+            b.appendChild(s);
+            b.insertAdjacentHTML("beforeend", ARROW);
+            b.addEventListener("click", function () { closeSheet(); requestWith(d.provider); });
+            li.appendChild(b); wsList.appendChild(li);
+          });
+          openSheet();
+        }
+
+        function isPhone() {
+          var touch = ("ontouchstart" in window) || navigator.maxTouchPoints > 0;
+          return touch && window.matchMedia("(max-width: 900px)").matches;
+        }
+        function showOpenIn() {
+          var u = location.href;
+          var hostPath = location.host + location.pathname + location.hash;
+          var links = [
+            ["MetaMask", "https://metamask.app.link/dapp/" + hostPath],
+            ["OKX Wallet", "okx://wallet/dapp/url?dappUrl=" + encodeURIComponent(u)],
+            ["Trust Wallet", "https://link.trustwallet.com/open_url?coin_id=60&url=" + encodeURIComponent(u)],
+            ["Coinbase Wallet", "https://go.cb-w.com/dapp?cb_url=" + encodeURIComponent(u)]
+          ];
+          wsTitle.textContent = "Open in your wallet";
+          wsSub.textContent = isPhone()
+            ? "Your browser has no wallet. Open this site in your wallet app's browser."
+            : "No wallet extension found. Install MetaMask or OKX Wallet, or open on your phone's wallet app.";
+          wsFoot.style.display = "";
+          wsCopy.textContent = "Copy link";
+          wsList.innerHTML = "";
+          links.forEach(function (l) {
+            var li = document.createElement("li");
+            var a = document.createElement("a");
+            a.className = "x-ws__row"; a.href = l[1]; a.rel = "noopener";
+            var s = document.createElement("span"); s.textContent = l[0];
+            a.appendChild(s);
+            a.insertAdjacentHTML("beforeend", ARROW);
+            li.appendChild(a); wsList.appendChild(li);
+          });
+          openSheet();
+        }
+        wsCopy.addEventListener("click", function () {
+          var u = location.href;
+          function done() {
+            wsCopy.textContent = "Copied";
+            clearTimeout(copyT);
+            copyT = setTimeout(function () { wsCopy.textContent = "Copy link"; }, 1600);
+          }
+          function fallback() {
+            wsInput.value = u;
+            wsInput.focus(); wsInput.select();
+            try { wsInput.setSelectionRange(0, u.length); } catch (err) {}
+            var ok = false;
+            try { ok = document.execCommand("copy"); } catch (err) {}
+            wsCopy.focus();
+            if (ok) done(); else toast("Couldn't copy. Copy the address bar instead.");
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(u).then(done, fallback);
+          } else fallback();
+        });
+
+        function pick() {
+          if (announced.length > 1) { showPicker(announced.slice()); return true; }
+          if (announced.length === 1) { requestWith(announced[0].provider); return true; }
+          if (window.ethereum) { requestWith(window.ethereum); return true; }
+          return false;
+        }
+        function connect() {
+          requestProviders();
+          if (pick()) return;
+          setTimeout(function () { if (!pick()) showOpenIn(); }, 150);
         }
         walletBtns.forEach(function (b) { b.addEventListener("click", connect); });
-        if (window.ethereum && window.ethereum.on) {
-          window.ethereum.on("accountsChanged", function (accs) { setAccount(accs && accs[0]); });
-        }
 
         /* ---- sound ---- */
         var muted = false, ctx = null, muteBtn = $("[data-mute]");
@@ -1624,8 +1822,9 @@
             input.focus();
           }
           if (addr) { fill(addr); return; }
-          if (window.ethereum && window.ethereum.request) {
-            window.ethereum.request({ method: "eth_accounts" }).then(function (accs) {
+          var prov = activeProvider || window.ethereum;
+          if (prov && prov.request) {
+            prov.request({ method: "eth_accounts" }).then(function (accs) {
               if (accs && accs[0]) fill(accs[0]);
               else setMsg("No wallet connected yet. Connect one or paste an address.", true);
             }).catch(function () { setMsg("No wallet connected yet. Connect one or paste an address.", true); });
