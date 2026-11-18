@@ -1442,8 +1442,8 @@
     <script>
       /* ---- WL checker config ---- */
       var CHECKER_LIVE = false;
-      var GTD_LIST = [];  /* lowercase addresses */
-      var FCFS_LIST = []; /* lowercase addresses */
+      var GTD_LIST = ["14c7e19047536d2ceb77c48e858e5a3f6a21215b0d34ad1c415b21e5b5626bb1", "41787172a72207699fb7c7de7e8f0f823af7d85533e675277efb7faf5807d6cd", "4accd20700fc7429a8305e61d462f5352f906b02dca473027873a1a62b47a2c8", "8becf1244ab3be3661b616285c0941fbab8febf2c252cf46d0eac1ab917c8cae", "ada78f5e2587f26aaea1aaa444e8a97a4fe3ddde4be487b3fb44ee55f6a3ffb5", "fde72934f439aad087f914f73e549a7085748c7c639447282d6927ab755e2a01"]; /* sha256 of lowercase address */
+      var FCFS_LIST = []; /* sha256 of lowercase address */
 
       (function () {
         var form = document.querySelector("[data-check-form]");
@@ -1487,11 +1487,12 @@
             show("", "clock", "Checker opens soon. The GTD list is being finalized.");
             return;
           }
-          var a = addr.toLowerCase();
-          var inList = function (list) { return list.some(function (x) { return String(x).toLowerCase() === a; }); };
-          if (inList(GTD_LIST)) show("gtd", "check", "<b>GTD ✓</b> — You're guaranteed a mint spot.");
-          else if (inList(FCFS_LIST)) show("fcfs", "queue", "<b>FCFS</b> — You're on the first-come list.");
-          else show("", "none", '<b>Not on the list</b> — Follow <a href="https://x.com/GearVaultNFT" target="_blank" rel="noopener">@GearVaultNFT</a> for the next WL drop.');
+          crypto.subtle.digest("SHA-256", new TextEncoder().encode(addr.toLowerCase())).then(function (buf) {
+            var a = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+            if (GTD_LIST.indexOf(a) > -1) show("gtd", "check", "<b>GTD ✓</b> — You're guaranteed a mint spot.");
+            else if (FCFS_LIST.indexOf(a) > -1) show("fcfs", "queue", "<b>FCFS</b> — You're on the first-come list.");
+            else show("", "none", '<b>Not on the list</b> — Follow <a href="https://x.com/GearVaultNFT" target="_blank" rel="noopener">@GearVaultNFT</a> for the next WL drop.');
+          });
         });
 
         input.addEventListener("input", function () { if (msg.textContent) setMsg(""); });
