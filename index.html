@@ -1082,9 +1082,9 @@
         <section class="x-sec">
           <div class="x-wrap x-game">
             <div class="x-head x-head--center">
-              <p class="x-eyebrow">Free · one crate a day</p>
+              <p class="x-eyebrow">Free · new crate every 3 minutes</p>
               <h2>Open the Vault Crate</h2>
-              <p class="x-sub">Pull a card at real supply odds. Share it on X and tag @GearVaultNFT: 3 sharers win GTD every day.</p>
+              <p class="x-sub">Pull a Legendary, share it on X with its Pull ID and tag @GearVaultNFT to get GTD.</p>
             </div>
             <div class="x-gamebox">
               <button class="x-btn x-btn--sm x-mute" type="button" data-mute aria-pressed="false">Sound on</button>
@@ -1711,48 +1711,103 @@
         }
 
         var RC = { Common: "#e6e9ec", Rare: "#4da3ff", Epic: "#a46bff", Legendary: "#f5c542" };
-        var nextEl = $("[data-next]"), DAYKEY = "gv_crate_v1", TEST = /[?&]test\b/.test(location.search);
-        function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
-        function saved() { if (TEST) return null; try { var v = JSON.parse(localStorage.getItem(DAYKEY) || "null"); return v && v.day === today() ? v : null; } catch (e) { return null; } }
-        function save(c) { try { localStorage.setItem(DAYKEY, JSON.stringify({ day: today(), id: c.id })); } catch (e) {} }
-        function showResult(c) {
+        var nextEl = $("[data-next]"), KEY = "gv_crate_v2", COOL = 3 * 60 * 1000, TEST = /[?&]test\b/.test(location.search);
+        var LOG_URL = "https://docs.google.com/forms/d/e/1FAIpQLScFq54cmc4CVSs1SLOIqIbd3_JOKeZuW8QjLJ0_OpTPRAqJsw/formResponse";
+        function last() { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } }
+        function cooling() { var v = last(); return !TEST && v && Date.now() - v.ts < COOL ? COOL - (Date.now() - v.ts) : 0; }
+        function newPid() {
+          var A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", b = new Uint8Array(6), s = "";
+          crypto.getRandomValues(b); for (var i = 0; i < 6; i++) s += A[b[i] % A.length];
+          return "GV-" + s;
+        }
+        function stamp(ts) { var d = new Date(ts), z = function (n) { return String(n).padStart(2, "0"); }; return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()) + " " + z(d.getHours()) + ":" + z(d.getMinutes()); }
+        function logPull(c, pid, ts) {
+          try {
+            var f = new URLSearchParams();
+            f.append("entry.921328596", "CRATE " + c.rarity);
+            f.append("entry.1018924333", pid);
+            f.append("entry.1585030491", "#" + c.id + " " + c.name + " (" + c.skin + ")");
+            f.append("entry.878706358", new Date(ts).toISOString());
+            fetch(LOG_URL, { method: "POST", mode: "no-cors", body: f });
+          } catch (e) {}
+        }
+        /* banner with the pull ID stamped on it */
+        var MOBILE = /Android|iPhone|iPad/i.test(navigator.userAgent), shareFile = null, shareUrl = null;
+        function buildBanner(c, pid, ts) {
+          shareFile = null; if (shareUrl) { URL.revokeObjectURL(shareUrl); shareUrl = null; }
+          var img = new Image();
+          img.onload = function () {
+            var cv = document.createElement("canvas"); cv.width = img.naturalWidth; cv.height = img.naturalHeight;
+            var x = cv.getContext("2d"); x.drawImage(img, 0, 0);
+            var H = cv.height, y = H - 52;
+            x.textBaseline = "alphabetic";
+            x.font = "500 21px 'Geist Mono', ui-monospace, monospace"; x.fillStyle = "#8a8a8a";
+            var lab = "PULL ID  "; x.fillText(lab, 110, y);
+            var w = x.measureText(lab).width;
+            x.font = "600 21px 'Geist Mono', ui-monospace, monospace"; x.fillStyle = "#ffffff"; x.fillText(pid, 110 + w, y);
+            var w2 = x.measureText(pid).width;
+            x.font = "500 21px 'Geist Mono', ui-monospace, monospace"; x.fillStyle = "#8a8a8a"; x.fillText("   " + stamp(ts), 110 + w + w2, y);
+            cv.toBlob(function (b) {
+              if (!b) return;
+              shareUrl = URL.createObjectURL(b);
+              shareFile = new File([b], "gearvault-" + pid + ".jpg", { type: "image/jpeg" });
+            }, "image/jpeg", 0.9);
+          };
+          img.src = "pull/" + c.id + ".jpg";
+        }
+        function showResult(c, pid, ts) {
           var rEl = $("[data-r-rarity]");
           rEl.textContent = c.rarity;
           rEl.className = "x-rarity x-r-" + c.rarity.toLowerCase();
           $("[data-r-name]").textContent = c.name + " · " + c.skin;
-          $("[data-r-meta]").textContent = "#" + c.id + " / 2222";
+          $("[data-r-meta]").textContent = "#" + c.id + " / 2222 · Pull ID " + pid;
           result.classList.add("is-shown");
           var link = "https://gearvault.fun/pull/" + c.id + ".html";
-          var text = "Pulled a " + c.rarity + " " + c.name + " (" + c.skin + ") from the GEARVAULT crate.\n\nOpen yours: " + link + "\n\n@GearVaultNFT";
+          var text = "Pulled a " + c.rarity + " " + c.name + " (" + c.skin + ") from the GEARVAULT crate.\nPull ID: " + pid + "\n\nOpen yours: " + link + "\n\n@GearVaultNFT";
           shareBtn.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(text);
-          shareBtn.dataset.img = "pull/" + c.id + ".jpg"; shareBtn.dataset.text = text; shareBtn.dataset.name = c.name;
+          shareBtn.dataset.text = text; shareBtn.dataset.pid = pid;
           shareBtn.hidden = false;
-          if (typeof prepShare === "function") prepShare();
+          buildBanner(c, pid, ts);
         }
-        var cdTimer = null;
-        function lockUntilTomorrow() {
-          openBtn.hidden = true; openBtn.parentNode.hidden = true; nextEl.hidden = false;
-          function tick() {
-            var n = new Date(), m = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1), ms = m - n;
-            if (ms <= 0 || !saved()) { clearInterval(cdTimer); location.reload(); return; }
-            var h = Math.floor(ms / 36e5), mi = Math.floor(ms % 36e5 / 6e4), se = Math.floor(ms % 6e4 / 1e3);
-            nextEl.textContent = "Next crate in " + String(h).padStart(2, "0") + ":" + String(mi).padStart(2, "0") + ":" + String(se).padStart(2, "0");
+        shareBtn.addEventListener("click", function (e) {
+          if (!shareFile) return;
+          if (MOBILE && navigator.canShare && navigator.canShare({ files: [shareFile] })) {
+            e.preventDefault();
+            navigator.share({ files: [shareFile], text: shareBtn.dataset.text }).catch(function (err) {
+              if (err && err.name !== "AbortError") location.href = shareBtn.href;
+            });
+            return;
           }
-          tick(); clearInterval(cdTimer); cdTimer = setInterval(tick, 1000);
+          /* desktop: save the stamped image, then the X composer opens (attach the saved image) */
+          var a = document.createElement("a"); a.href = shareUrl; a.download = shareFile.name;
+          document.body.appendChild(a); a.click(); a.remove();
+        });
+        var cdTimer = null;
+        function startCooldown() {
+          clearInterval(cdTimer);
+          function tick() {
+            var ms = cooling();
+            if (ms <= 0) { clearInterval(cdTimer); nextEl.hidden = true; openBtn.hidden = false; openBtn.parentNode.hidden = false; return; }
+            openBtn.hidden = true; openBtn.parentNode.hidden = true; nextEl.hidden = false;
+            var mi = Math.floor(ms / 6e4), se = Math.floor(ms % 6e4 / 1e3);
+            nextEl.textContent = "Next crate in " + String(mi).padStart(2, "0") + ":" + String(se).padStart(2, "0");
+          }
+          tick(); cdTimer = setInterval(tick, 1000);
         }
 
         async function openCrate() {
-          if (busy || saved()) return;
+          if (busy || cooling()) return;
           busy = true;
-          openBtn.hidden = true; shareBtn.hidden = true; againBtn.hidden = true; againBtn.parentNode.hidden = true;
+          openBtn.hidden = true; openBtn.parentNode.hidden = true; shareBtn.hidden = true; againBtn.hidden = true; againBtn.parentNode.hidden = true;
           result.classList.remove("is-shown");
           if (stage.classList.contains("is-open")) {
             card.classList.remove("is-flipped");
             stage.classList.remove("is-open", "is-rise", "is-pop", "is-charged");
             await wait(500);
           }
-          var c = pick();
-          save(c);
+          var c = pick(), pid = newPid(), ts = Date.now();
+          try { localStorage.setItem(KEY, JSON.stringify({ ts: ts, id: c.id, pid: pid })); } catch (e) {}
+          if (c.rarity === "Legendary" && !TEST) logPull(c, pid, ts);
           var leg = c.rarity === "Legendary";
           stage.style.setProperty("--rc", RC[c.rarity]);
           card.classList.toggle("is-legendary", leg);
@@ -1774,45 +1829,26 @@
           card.classList.add("is-flipped");
           await wait(reduced ? 50 : 900);
 
-          showResult(c);
+          showResult(c, pid, ts);
           chime(leg);
           tally.total++; tally[c.rarity]++;
           history.unshift(c); history = history.slice(0, 8);
           renderTally();
           busy = false;
-          if (TEST) { againBtn.hidden = false; againBtn.parentNode.hidden = false; } else lockUntilTomorrow();
+          if (TEST) { openBtn.hidden = false; openBtn.parentNode.hidden = false; } else startCooldown();
           shareBtn.focus({ preventScroll: true });
         }
         openBtn.addEventListener("click", openCrate);
         againBtn.addEventListener("click", openCrate);
-        /* mobile: attach the pull banner image directly to the post */
-        var MOBILE = /Android|iPhone|iPad/i.test(navigator.userAgent), shareFile = null;
-        function prepShare() {
-          shareFile = null;
-          if (!MOBILE || !navigator.canShare || !shareBtn.dataset.img) return;
-          var want = shareBtn.dataset.img;
-          fetch(want).then(function (r) { return r.blob(); }).then(function (b) {
-            if (shareBtn.dataset.img !== want) return;
-            var f = new File([b], "gearvault-" + shareBtn.dataset.name.toLowerCase().replace(/\s+/g, "-") + ".jpg", { type: "image/jpeg" });
-            if (navigator.canShare({ files: [f] })) shareFile = f;
-          }).catch(function () {});
-        }
-        shareBtn.addEventListener("click", function (e) {
-          if (!shareFile) return;
-          e.preventDefault();
-          navigator.share({ files: [shareFile], text: shareBtn.dataset.text }).catch(function (err) {
-            if (err && err.name !== "AbortError") location.href = shareBtn.href;
-          });
-        });
         (function restore() {
-          var v = saved(); if (!v) return;
+          var v = last(); if (!v || !v.pid) return;
           var c = POOL.filter(function (x) { return String(x.id) === String(v.id); })[0]; if (!c) return;
           stage.style.setProperty("--rc", RC[c.rarity]);
           card.classList.toggle("is-legendary", c.rarity === "Legendary");
           front.textContent = ""; front.appendChild(cardImg(c.file));
           stage.classList.add("is-open"); card.classList.add("is-flipped");
           tally.total = 1; tally[c.rarity] = 1; history = [c]; renderTally();
-          showResult(c); lockUntilTomorrow();
+          showResult(c, v.pid, v.ts); startCooldown();
         })();
 
         /* ---- lightbox ---- */
