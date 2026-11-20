@@ -1722,9 +1722,12 @@
           $("[data-r-name]").textContent = c.name + " · " + c.skin;
           $("[data-r-meta]").textContent = "#" + c.id + " / 2222";
           result.classList.add("is-shown");
-          var text = "Pulled a " + c.rarity + " " + c.name + " (" + c.skin + ") from the GEARVAULT crate.\n\nOpen yours: https://gearvault.fun/#crate\n\n@GearVaultNFT";
+          var link = "https://gearvault.fun/pull/" + c.id + ".html";
+          var text = "Pulled a " + c.rarity + " " + c.name + " (" + c.skin + ") from the GEARVAULT crate.\n\nOpen yours: " + link + "\n\n@GearVaultNFT";
           shareBtn.href = "https://x.com/intent/tweet?text=" + encodeURIComponent(text);
+          shareBtn.dataset.img = "pull/" + c.id + ".jpg"; shareBtn.dataset.text = text; shareBtn.dataset.name = c.name;
           shareBtn.hidden = false;
+          if (typeof prepShare === "function") prepShare();
         }
         var cdTimer = null;
         function lockUntilTomorrow() {
@@ -1782,6 +1785,25 @@
         }
         openBtn.addEventListener("click", openCrate);
         againBtn.addEventListener("click", openCrate);
+        /* mobile: attach the pull banner image directly to the post */
+        var MOBILE = /Android|iPhone|iPad/i.test(navigator.userAgent), shareFile = null;
+        function prepShare() {
+          shareFile = null;
+          if (!MOBILE || !navigator.canShare || !shareBtn.dataset.img) return;
+          var want = shareBtn.dataset.img;
+          fetch(want).then(function (r) { return r.blob(); }).then(function (b) {
+            if (shareBtn.dataset.img !== want) return;
+            var f = new File([b], "gearvault-" + shareBtn.dataset.name.toLowerCase().replace(/\s+/g, "-") + ".jpg", { type: "image/jpeg" });
+            if (navigator.canShare({ files: [f] })) shareFile = f;
+          }).catch(function () {});
+        }
+        shareBtn.addEventListener("click", function (e) {
+          if (!shareFile) return;
+          e.preventDefault();
+          navigator.share({ files: [shareFile], text: shareBtn.dataset.text }).catch(function (err) {
+            if (err && err.name !== "AbortError") location.href = shareBtn.href;
+          });
+        });
         (function restore() {
           var v = saved(); if (!v) return;
           var c = POOL.filter(function (x) { return String(x.id) === String(v.id); })[0]; if (!c) return;
