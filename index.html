@@ -1084,7 +1084,8 @@
             <div class="x-head x-head--center">
               <p class="x-eyebrow">Free · new crate every 3 minutes</p>
               <h2>Open the Vault Crate</h2>
-              <p class="x-sub">Pull a Legendary, share it on X with its Pull ID and tag @GearVaultNFT to get GTD.</p>
+              <p class="x-sub">Pull a Legendary, share it on X with its Pull ID and tag @GearVaultNFT. First 20 get GTD.</p>
+              <p class="x-eyebrow" data-campaign>20 GTD · ends in 24:00:00</p>
             </div>
             <div class="x-gamebox">
               <button class="x-btn x-btn--sm x-mute" type="button" data-mute aria-pressed="false">Sound on</button>
@@ -1840,6 +1841,17 @@
         }
         openBtn.addEventListener("click", openCrate);
         againBtn.addEventListener("click", openCrate);
+        (function campaign() {
+          var END = Date.parse("2026-11-21T08:10:00+07:00"), el = $("[data-campaign]");
+          if (!el) return;
+          function t() {
+            var ms = END - Date.now();
+            if (ms <= 0) { el.textContent = "GTD campaign ended"; clearInterval(iv); return; }
+            var h = Math.floor(ms / 36e5), m = Math.floor(ms % 36e5 / 6e4), x = Math.floor(ms % 6e4 / 1e3), z = function (n) { return String(n).padStart(2, "0"); };
+            el.textContent = "20 GTD · ends in " + z(h) + ":" + z(m) + ":" + z(x);
+          }
+          var iv = setInterval(t, 1000); t();
+        })();
         (function restore() {
           var v = last(); if (!v || !v.pid) return;
           var c = POOL.filter(function (x) { return String(x.id) === String(v.id); })[0]; if (!c) return;
