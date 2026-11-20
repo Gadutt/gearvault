@@ -1711,7 +1711,7 @@
         }
 
         var RC = { Common: "#e6e9ec", Rare: "#4da3ff", Epic: "#a46bff", Legendary: "#f5c542" };
-        var nextEl = $("[data-next]"), DAYKEY = "gv_crate_v1", TEST = /[?&]test\b/.test(location.search);
+        var nextEl = $("[data-next]"), DAYKEY = "gv_crate_v1", TEST = true;
         function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
         function saved() { if (TEST) return null; try { var v = JSON.parse(localStorage.getItem(DAYKEY) || "null"); return v && v.day === today() ? v : null; } catch (e) { return null; } }
         function save(c) { try { localStorage.setItem(DAYKEY, JSON.stringify({ day: today(), id: c.id })); } catch (e) {} }
