@@ -1357,7 +1357,7 @@
             <div class="x-wl__block">
               <div class="x-wl__hrow"><h3 class="x-wl__h">Check status</h3><span class="x-soon" data-check-soon>Soon</span></div>
               <p class="x-wl__sub">Check if your wallet is GTD for the GEARVAULT mint.</p>
-              <div class="gv-cd" data-gv-cd aria-live="off"><span class="gv-cd__lbl">Checker opens in</span><div class="gv-cd__row"><div><b data-cd-h>24</b><span>Hours</span></div><div><b data-cd-m>00</b><span>Min</span></div><div><b data-cd-s>00</b><span>Sec</span></div></div></div>
+              <div class="gv-cd" data-gv-cd aria-live="off"><span class="gv-cd__lbl">Coming soon</span><div class="gv-cd__row"><div><b data-cd-h>24</b><span>Hours</span></div><div><b data-cd-m>00</b><span>Min</span></div><div><b data-cd-s>00</b><span>Sec</span></div></div></div>
             <div class="x-check">
               <form class="x-check__form" data-check-form novalidate>
                 <div class="x-check__row">
@@ -1918,7 +1918,7 @@
     </script>
     <script>
       /* ---- WL checker config ---- */
-      var CHECKER_LIVE = true;
+      var CHECKER_LIVE = false;
       var GTD_LIST = ["14c7e19047536d2ceb77c48e858e5a3f6a21215b0d34ad1c415b21e5b5626bb1", "41787172a72207699fb7c7de7e8f0f823af7d85533e675277efb7faf5807d6cd", "4accd20700fc7429a8305e61d462f5352f906b02dca473027873a1a62b47a2c8", "8becf1244ab3be3661b616285c0941fbab8febf2c252cf46d0eac1ab917c8cae", "ada78f5e2587f26aaea1aaa444e8a97a4fe3ddde4be487b3fb44ee55f6a3ffb5", "fde72934f439aad087f914f73e549a7085748c7c639447282d6927ab755e2a01"]; /* sha256 of lowercase address */
       var FCFS_LIST = []; /* sha256 of lowercase address */
 
@@ -1961,7 +1961,7 @@
           }
           setMsg("");
           if (!CHECKER_LIVE) {
-            show("", "clock", "Checker opens soon. The GTD list is being finalized.");
+            show("", "clock", "Coming soon.");
             return;
           }
           crypto.subtle.digest("SHA-256", new TextEncoder().encode(addr.toLowerCase())).then(function (buf) {
@@ -2475,7 +2475,7 @@
           .catch(function(){msg.textContent="Could not build your card. Try again.";});}
         form.addEventListener("submit",function(e){e.preventDefault();e.stopImmediatePropagation();
           var a=input.value.trim();if(!/^0x[a-fA-F0-9]{40}$/.test(a)){msg.classList.remove("is-info");msg.textContent="That doesn't look like a valid wallet address.";return}
-          if(!GV_OPEN){res.hidden=true;msg.classList.add("is-info");msg.textContent="Checker opens when the countdown ends.";return}
+          if(!GV_OPEN){res.hidden=true;msg.classList.add("is-info");msg.textContent="Coming soon.";return}
           msg.textContent="";gvSha(a.toLowerCase()).then(function(hh){open(GV_MAP[hh]||"PUBLIC",a)});},true);
         document.querySelector("[data-gv-again]").addEventListener("click",function(){if(gvLast)open(gvLast[0],gvLast[1])});
         rv.addEventListener("click",function(e){if(e.target===rv||e.target.closest("[data-gv-close]"))rv.hidden=true});
@@ -2485,9 +2485,9 @@
 
     <script>
     (function(){var T=new Date("2026-11-25T00:40:00+07:00").getTime();var el=document.querySelector("[data-gv-cd]");if(!el)return;
-    var h=el.querySelector("[data-cd-h]"),m=el.querySelector("[data-cd-m]"),s=el.querySelector("[data-cd-s]"),l=el.querySelector(".gv-cd__lbl");
+    var h=el.querySelector("[data-cd-h]"),m=el.querySelector("[data-cd-m]"),s=el.querySelector("[data-cd-s]");
     function p(n){return n<10?"0"+n:""+n}
-    function t(){var d=Math.max(0,T-Date.now());var x=Math.floor(d/1000);h.textContent=p(Math.floor(x/3600));m.textContent=p(Math.floor(x%3600/60));s.textContent=p(x%60);if(d<=0){l.textContent="Checker opening soon";clearInterval(i)}}
+    function t(){var d=Math.max(0,T-Date.now());var x=Math.floor(d/1000);h.textContent=p(Math.floor(x/3600));m.textContent=p(Math.floor(x%3600/60));s.textContent=p(x%60);if(d<=0){clearInterval(i)}}
     var i=setInterval(t,1000);t();})();
     </script>
   </body>
