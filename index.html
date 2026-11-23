@@ -1278,7 +1278,7 @@
                 <span>Wallet: <span class="x-mono" data-wallet-addr>not connected</span></span>
                 <button class="x-cap" type="button" data-wallet><span class="x-cap__title" data-wallet-label>Connect Wallet</span><span class="x-cap__go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3" /><rect x="4" y="8" width="16" height="11" rx="2.5" /><path d="M16 13.5h.01" /></svg></span></button>
               </div>
-              <p class="x-note">Whitelist: <b>first 111 wallet addresses</b> from our X crate post.</p>
+              
             </div>
           </div>
         </section>
@@ -1321,6 +1321,7 @@
 
             <div class="x-wl__block">
               <h3 class="x-wl__h">Submit proof</h3>
+              <div class="gv-cd" data-gv-cd aria-live="off"><span class="gv-cd__lbl" data-cd-lbl>Whitelist closes in</span><div class="gv-cd__row"><div><b data-cd-h>24</b><span>Hours</span></div><div><b data-cd-m>00</b><span>Min</span></div><div><b data-cd-s>00</b><span>Sec</span></div></div></div>
               <form class="x-wl__form" data-wl-form novalidate>
                 <div class="x-wl__field">
                   <label for="x-wl-handle">X handle</label>
@@ -1357,7 +1358,6 @@
             <div class="x-wl__block">
               <div class="x-wl__hrow"><h3 class="x-wl__h">Check status</h3><span class="x-soon" data-check-soon>Soon</span></div>
               <p class="x-wl__sub">Check if your wallet is GTD for the GEARVAULT mint.</p>
-              <div class="gv-cd" data-gv-cd aria-live="off"><span class="gv-cd__lbl">Coming soon</span><div class="gv-cd__row"><div><b data-cd-h>24</b><span>Hours</span></div><div><b data-cd-m>00</b><span>Min</span></div><div><b data-cd-s>00</b><span>Sec</span></div></div></div>
             <div class="x-check">
               <form class="x-check__form" data-check-form novalidate>
                 <div class="x-check__row">
@@ -2487,7 +2487,8 @@
     (function(){var T=new Date("2026-11-25T00:40:00+07:00").getTime();var el=document.querySelector("[data-gv-cd]");if(!el)return;
     var h=el.querySelector("[data-cd-h]"),m=el.querySelector("[data-cd-m]"),s=el.querySelector("[data-cd-s]");
     function p(n){return n<10?"0"+n:""+n}
-    function t(){var d=Math.max(0,T-Date.now());var x=Math.floor(d/1000);h.textContent=p(Math.floor(x/3600));m.textContent=p(Math.floor(x%3600/60));s.textContent=p(x%60);if(d<=0){clearInterval(i)}}
+    function t(){var d=Math.max(0,T-Date.now());var x=Math.floor(d/1000);h.textContent=p(Math.floor(x/3600));m.textContent=p(Math.floor(x%3600/60));s.textContent=p(x%60);if(d<=0){clearInterval(i);gvClose()}}
+    function gvClose(){var l=el.querySelector("[data-cd-lbl]");if(l)l.textContent="Whitelist closed";var f=document.querySelector("[data-wl-form]");if(!f)return;var b=f.querySelector("[data-wl-submit]");if(b)b.disabled=true;var hn=f.querySelector("[data-wl-hint]");if(hn)hn.textContent="Whitelist is closed.";f.addEventListener("submit",function(e){e.preventDefault();e.stopImmediatePropagation()},true);f.querySelectorAll("input").forEach(function(x){x.disabled=true})}
     var i=setInterval(t,1000);t();})();
     </script>
   </body>
