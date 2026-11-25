@@ -2470,8 +2470,9 @@
         var TXT={GTD:"I secured a GTD spot for @GearVaultNFT. 2222 pixel weapons on Robinhood Chain. Check yours at gearvault.fun",
                  OG:"I secured an OG spot for @GearVaultNFT. 2222 pixel weapons on Robinhood Chain. Check yours at gearvault.fun",
                  FCFS:"I secured an FCFS spot for @GearVaultNFT. 2222 pixel weapons on Robinhood Chain. Check yours at gearvault.fun",
-                 PUBLIC:"Gearing up for the @GearVaultNFT public mint. 2222 pixel weapons on Robinhood Chain. gearvault.fun"};
-        function open(tier,addr){gvLast=[tier,addr];res.hidden=true;gvRender(tier,addr).then(function(u){img.src=u;dl.href=u;sh.href="https://x.com/intent/post?text="+encodeURIComponent(TXT[tier]);rv.hidden=false;})
+                 PUBLIC:"Gearing up for the @GearVaultNFT public mint. 2222 pixel weapons on Robinhood Chain. gearvault.fun",
+                 HOLDER:"I secured a GTD Holder spot for @GearVaultNFT. 2222 pixel weapons on Robinhood Chain. Check yours at gearvault.fun"};
+        function open(tier,addr){gvLast=[tier,addr];res.hidden=true;gvRender(tier,addr).then(function(u){img.src=u;dl.href=u;sh.href="https://x.com/intent/post?text="+encodeURIComponent(TXT[tier]||(tier.indexOf("HOLDER")===0?TXT.HOLDER:TXT.GTD));rv.hidden=false;})
           .catch(function(){msg.textContent="Could not build your card. Try again.";});}
         form.addEventListener("submit",function(e){e.preventDefault();e.stopImmediatePropagation();
           var a=input.value.trim();if(!/^0x[a-fA-F0-9]{40}$/.test(a)){msg.classList.remove("is-info");msg.textContent="That doesn't look like a valid wallet address.";return}
